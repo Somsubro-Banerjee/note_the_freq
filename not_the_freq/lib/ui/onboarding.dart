@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'styles.dart';
+
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -43,7 +43,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: AssetImage('assets/images/5.jpg',
+              image: AssetImage('assets/images/4.jpg',
               ),
             ),
           ),
