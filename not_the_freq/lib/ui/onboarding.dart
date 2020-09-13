@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:not_the_freq/auth/LoginPage.dart';
 
-
+int initScreen;
 class OnboardingScreen extends StatefulWidget {
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
@@ -40,7 +41,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         value: SystemUiOverlayStyle.dark,
         child: Container(
           decoration: BoxDecoration(
-            
             image: DecorationImage(
               fit: BoxFit.cover,
               image: AssetImage('assets/images/4.jpg',
@@ -232,7 +232,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               width: double.infinity,
               color: Colors.black,
               child: GestureDetector(
-                onTap: () => print('Get started'),
+                onTap: () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                },
                 child: Center(
                   child: Padding(
                     padding: EdgeInsets.only(bottom: 10.0),
