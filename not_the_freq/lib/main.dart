@@ -7,7 +7,7 @@ void main()
   runApp(
     new MaterialApp(
       home: OnboardingScreen(),
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
     )
   );
 }
