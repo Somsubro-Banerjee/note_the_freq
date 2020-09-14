@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "111577037900",
+    "firebase_url": "https://note-the-freq.firebaseio.com",
+    "project_id": "note-the-freq",
+    "storage_bucket": "note-the-freq.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:111577037900:android:5fdab2ae6dfc8d2b4c08e9",
+        "android_client_info": {
+          "package_name": "com.project.not_the_freq"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "111577037900-v1nsi2mq9jr7ibgnagu01camfjacbnqh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.not_the_freq",
+            "certificate_hash": "4ca2bf5d0343efc4d38a56542a689ab91e3251f9"
+          }
+        },
+        {
+          "client_id": "111577037900-dr88cikch6arhu4t2qta7qe7ort3g063.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWW8QvSqDYxRFULZdNJ5dITneaXCbq7vI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "111577037900-dr88cikch6arhu4t2qta7qe7ort3g063.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
