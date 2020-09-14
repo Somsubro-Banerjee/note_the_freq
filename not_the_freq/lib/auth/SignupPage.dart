@@ -6,6 +6,7 @@ import 'package:not_the_freq/auth/LoginPage.dart';
 import 'package:video_player/video_player.dart';
 import 'package:not_the_freq/ui/HomeScreen.dart';
 import 'package:flutter_tagging/flutter_tagging.dart';
+
 class SignupPage extends StatefulWidget {
   @override
   _SignupPageState createState() => _SignupPageState();
