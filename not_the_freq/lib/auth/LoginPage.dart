@@ -12,6 +12,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  TextEditingController emailController;
+  TextEditingController passwordController;
+  String email;
+  String pass;
+
   VideoPlayerController _controller;
   void initState() {
     super.initState();
@@ -30,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
     _controller.dispose();
   }
-
+  Color shade1 = Color(0xFF7447d8);
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -69,10 +75,10 @@ class _LoginPageState extends State<LoginPage> {
                               width: 300,
                             margin: EdgeInsets.only(top:30),
                             decoration: BoxDecoration(
-                              color: Colors.green.shade900,
+                              color: shade1,
                               borderRadius: BorderRadius.circular(40),
                               border: Border.all(
-                                color: Colors.green.shade900,
+                                color: shade1,
                                 width: 2
                               )
                             )
@@ -107,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                               right: MediaQuery.of(context).size.width * 0.05),
                           child: TextFormField(
                             autocorrect: true,
-                            // controller: emailController,
+                            controller: emailController,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
                               Pattern pattern =
@@ -118,10 +124,10 @@ class _LoginPageState extends State<LoginPage> {
                               else
                                 return null;
                             },
-                            // onSaved: (value) => _email = value.trim(),
+                            onSaved: (value) => email = value.trim(),
                             obscureText: false,
                             onChanged: (val) {
-                              // setState(() => _email = val);
+                              setState(() => email = val);
                             },
                             autofocus: false,
                             style: TextStyle(color: Colors.white),
@@ -138,10 +144,6 @@ class _LoginPageState extends State<LoginPage> {
                                   borderSide:
                                   const BorderSide(color: Colors.black, width: 0.0),
                                 ),
-                                // border: const OutlineInputBorder(
-                                //   borderSide:
-                                //   const BorderSide(color: Colors.black, width: 1.75),
-                                // ),
                                 prefixIcon: Icon(
                                   Icons.email,
                                   color: Colors.white,
@@ -167,30 +169,28 @@ class _LoginPageState extends State<LoginPage> {
                             top: MediaQuery.of(context).size.height * 0.04,
                             left: MediaQuery.of(context).size.width * 0.05,
                             right: MediaQuery.of(context).size.width * 0.05),
-                        child: TextField(
+                        child: TextFormField(
                           enabled: true,
                           autocorrect: true,
                           // controller: emailController,
                           keyboardType: TextInputType.emailAddress,
-                          // validator: (value) {
-                          //   Pattern pattern =
-                          //       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                          //   RegExp regex = new RegExp(pattern);
-                          //   if (!(regex.hasMatch(value) && value.isNotEmpty))
-                          //     return "Please enter a valid Email-ID";
-                          //   else
-                          //     return null;
-                          // },
-                          // onSaved: (value) => _email = value.trim(),
+                          validator: (value) {
+                            if (value.length >= 6 && value.isNotEmpty)
+                              return "Looks good";
+                            else
+                              return "Password must be Greater than 6 characters";
+                          },
+                          onSaved: (value) => pass = value.trim(),
                           obscureText: false,
                           onChanged: (val) {
-                            // setState(() => _email = val);
+                            setState(() => pass = val);
                           },
                           autofocus: false,
                           style: TextStyle(color: Colors.white),
                           decoration: InputDecoration(
+                            // errorText: "Wrong Pass Cyuka Blyat",
                               border: InputBorder.none,
-                              errorStyle: TextStyle(color: Colors.white),
+                              errorStyle: TextStyle(color: Colors.red),
                               enabledBorder: const OutlineInputBorder(
                                 borderRadius: BorderRadius.all(Radius.circular(150)),
                                 borderSide:
@@ -201,10 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                                 borderSide:
                                 const BorderSide(color: Colors.black, width: 0.0),
                               ),
-                              // border: const OutlineInputBorder(
-                              //   borderSide:
-                              //   const BorderSide(color: Colors.black, width: 1.75),
-                              // ),
+                            
                               prefixIcon: Icon(
                                 Icons.security,
                                 color: Colors.white,
@@ -232,7 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                             text: "Forgot Password ?",
                             style: TextStyle(
-                                color: Colors.green,
+                                color: shade1,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w900),
                           )),
@@ -245,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                           left: MediaQuery.of(context).size.width * 0.05,
                           right: MediaQuery.of(context).size.width * 0.05),
                       child: RaisedButton(
-                        color: Colors.green,
+                        color: shade1,
                         onPressed: () async {
                           // if (_formKey.currentState.validate()) {
                           //   try {
@@ -320,7 +317,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                             text: "Don't have an account?? Sign up",
                             style: TextStyle(
-                                color: Colors.green,
+                                color: shade1,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w900),
                           )),

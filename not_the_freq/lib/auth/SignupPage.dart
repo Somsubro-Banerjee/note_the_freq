@@ -13,9 +13,33 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+
+  TextEditingController nameController;
+  TextEditingController emailController;
+  TextEditingController passController;
+  TextEditingController cnfPassController;
+  TextEditingController bioController;
+  TextEditingController interestController;
+
+
+
+  String name;
+  String email;
+  String pass;
+  String cnfPass;
+  String bio;
+  String interest;
+
   String text = "Nothing to show";
   VideoPlayerController _controller;
+
   void initState() {
+    nameController = new TextEditingController();
+    emailController = new TextEditingController();
+    passController = new TextEditingController();
+    cnfPassController = new TextEditingController();
+    bioController = new TextEditingController();
+    interestController = new TextEditingController();
     super.initState();
     // Pointing the video controller to our local asset.
     _controller = VideoPlayerController.asset("assets/videos/vid1.mp4")
@@ -32,9 +56,10 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
     _controller.dispose();
   }
-
+  Color shade1 = Color(0xFF7447d8);
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -71,10 +96,10 @@ class _SignupPageState extends State<SignupPage> {
                               width: 80,
                               margin: EdgeInsets.only(top:30, left: 5),
                               decoration: BoxDecoration(
-                                  color: Colors.green.shade900,
+                                  color: shade1,
                                   borderRadius: BorderRadius.circular(40),
                                   border: Border.all(
-                                      color: Colors.green.shade900,
+                                      color: shade1,
                                       width: 2
                                   )
                               )
@@ -108,10 +133,10 @@ class _SignupPageState extends State<SignupPage> {
                               width: 300,
                               margin: EdgeInsets.only(top:30),
                               decoration: BoxDecoration(
-                                  color: Colors.green.shade900,
+                                  color: shade1,
                                   borderRadius: BorderRadius.circular(40),
                                   border: Border.all(
-                                      color: Colors.green.shade900,
+                                      color: shade1,
                                       width: 2
                                   )
                               )
@@ -143,14 +168,14 @@ class _SignupPageState extends State<SignupPage> {
                               top: MediaQuery.of(context).size.height * 0.03,
                               left: MediaQuery.of(context).size.width * 0.05,
                               right: MediaQuery.of(context).size.width * 0.05),
-                          child: TextField(
+                          child: TextFormField(
                             autocorrect: true,
-                            // controller: emailController,
+                            controller: nameController,
                             keyboardType: TextInputType.name,
-                            // onSaved: (value) => _email = value.trim(),
+                            onSaved: (value) => name = value.trim(),
                             obscureText: false,
                             onChanged: (val) {
-                              // setState(() => _email = val);
+                              setState(() => name = val);
                             },
                             autofocus: false,
                             style: TextStyle(color: Colors.white),
@@ -167,10 +192,7 @@ class _SignupPageState extends State<SignupPage> {
                                   borderSide:
                                   const BorderSide(color: Colors.black, width: 0.0),
                                 ),
-                                // border: const OutlineInputBorder(
-                                //   borderSide:
-                                //   const BorderSide(color: Colors.black, width: 1.75),
-                                // ),
+                                
                                 prefixIcon: Icon(
                                   Icons.person,
                                   color: Colors.white,
@@ -201,7 +223,7 @@ class _SignupPageState extends State<SignupPage> {
                               right: MediaQuery.of(context).size.width * 0.05),
                           child: TextFormField(
                             autocorrect: true,
-                            // controller: emailController,
+                            controller: emailController,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
                               Pattern pattern =
@@ -212,10 +234,10 @@ class _SignupPageState extends State<SignupPage> {
                               else
                                 return null;
                             },
-                            // onSaved: (value) => _email = value.trim(),
+                            onSaved: (value) => email = value.trim(),
                             obscureText: false,
                             onChanged: (val) {
-                              // setState(() => _email = val);
+                              setState(() => email = val);
                             },
                             autofocus: false,
                             style: TextStyle(color: Colors.white),
@@ -232,10 +254,7 @@ class _SignupPageState extends State<SignupPage> {
                                   borderSide:
                                   const BorderSide(color: Colors.black, width: 0.0),
                                 ),
-                                // border: const OutlineInputBorder(
-                                //   borderSide:
-                                //   const BorderSide(color: Colors.black, width: 1.75),
-                                // ),
+                               
                                 prefixIcon: Icon(
                                   Icons.email,
                                   color: Colors.white,
@@ -262,30 +281,29 @@ class _SignupPageState extends State<SignupPage> {
                             top: MediaQuery.of(context).size.height * 0.04,
                             left: MediaQuery.of(context).size.width * 0.05,
                             right: MediaQuery.of(context).size.width * 0.05),
-                        child: TextField(
+                        child: TextFormField(
                           enabled: true,
                           autocorrect: true,
-                          // controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          // validator: (value) {
-                          //   Pattern pattern =
-                          //       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                          //   RegExp regex = new RegExp(pattern);
-                          //   if (!(regex.hasMatch(value) && value.isNotEmpty))
-                          //     return "Please enter a valid Email-ID";
-                          //   else
-                          //     return null;
-                          // },
-                          // onSaved: (value) => _email = value.trim(),
-                          obscureText: false,
+                          controller: passController,
+                          keyboardType: TextInputType.visiblePassword,
+                          validator: (value) {
+                            
+                            if ( value.length >= 6 && value.isNotEmpty)
+                              return "Looks good";
+                            else
+                              return "Password must be greater than 6 characters";
+                          },
+                          onSaved: (value) => pass = value.trim(),
+                          obscureText: true,
                           onChanged: (val) {
-                            // setState(() => _email = val);
+                            setState(() => pass = val);
                           },
                           autofocus: false,
                           style: TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                               border: InputBorder.none,
-                              errorStyle: TextStyle(color: Colors.white),
+                              // errorText: "password must be more than 6 characters",
+                              errorStyle: TextStyle(color: Colors.red),
                               enabledBorder: const OutlineInputBorder(
                                 borderRadius: BorderRadius.all(Radius.circular(150)),
                                 borderSide:
@@ -296,10 +314,7 @@ class _SignupPageState extends State<SignupPage> {
                                 borderSide:
                                 const BorderSide(color: Colors.black, width: 0.0),
                               ),
-                              // border: const OutlineInputBorder(
-                              //   borderSide:
-                              //   const BorderSide(color: Colors.black, width: 1.75),
-                              // ),
+                             
                               prefixIcon: Icon(
                                 Icons.security,
                                 color: Colors.white,
@@ -323,24 +338,22 @@ class _SignupPageState extends State<SignupPage> {
                             top: MediaQuery.of(context).size.height * 0.04,
                             left: MediaQuery.of(context).size.width * 0.05,
                             right: MediaQuery.of(context).size.width * 0.05),
-                        child: TextField(
+                        child: TextFormField(
                           enabled: true,
                           autocorrect: true,
-                          // controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          // validator: (value) {
-                          //   Pattern pattern =
-                          //       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                          //   RegExp regex = new RegExp(pattern);
-                          //   if (!(regex.hasMatch(value) && value.isNotEmpty))
-                          //     return "Please enter a valid Email-ID";
-                          //   else
-                          //     return null;
-                          // },
-                          // onSaved: (value) => _email = value.trim(),
-                          obscureText: false,
+                          controller: cnfPassController,
+                          keyboardType: TextInputType.visiblePassword,
+                          validator: (value) {
+                           
+                            if (value.length >= 6 && cnfPassController.text == passController.text && value.isNotEmpty)
+                              return "looks good";
+                            else
+                              return "Fuck you Cyuka blyat";
+                          },
+                          onSaved: (value) => cnfPass = value.trim(),
+                          obscureText: true,
                           onChanged: (val) {
-                            // setState(() => _email = val);
+                            setState(() => cnfPass = val);
                           },
                           autofocus: false,
                           style: TextStyle(color: Colors.white),
@@ -357,10 +370,7 @@ class _SignupPageState extends State<SignupPage> {
                                 borderSide:
                                 const BorderSide(color: Colors.black, width: 0.0),
                               ),
-                              // border: const OutlineInputBorder(
-                              //   borderSide:
-                              //   const BorderSide(color: Colors.black, width: 1.75),
-                              // ),
+                             
                               prefixIcon: Icon(
                                 Icons.security,
                                 color: Colors.white,
@@ -386,10 +396,10 @@ class _SignupPageState extends State<SignupPage> {
                               width: 45,
                               margin: EdgeInsets.only(top:30),
                               decoration: BoxDecoration(
-                                  color: Colors.green.shade900,
+                                  color: shade1,
                                   borderRadius: BorderRadius.circular(40),
                                   border: Border.all(
-                                      color: Colors.green.shade900,
+                                      color: shade1,
                                       width: 2
                                   )
                               )
@@ -421,15 +431,15 @@ class _SignupPageState extends State<SignupPage> {
                               top: MediaQuery.of(context).size.height * 0.01,
                               left: MediaQuery.of(context).size.width * 0.05,
                               right: MediaQuery.of(context).size.width * 0.05),
-                          child: TextField(
+                          child: TextFormField(
                             maxLines: 10,
                             autocorrect: true,
-                            // controller: emailController,
+                            controller: bioController,
                             keyboardType: TextInputType.multiline,
-                            // onSaved: (value) => _email = value.trim(),
+                            onSaved: (value) => bio = value.trim(),
                             obscureText: false,
                             onChanged: (val) {
-                              // setState(() => _email = val);
+                              setState(() => bio = val);
                             },
                             autofocus: false,
                             style: TextStyle(color: Colors.white),
@@ -444,12 +454,92 @@ class _SignupPageState extends State<SignupPage> {
                                 enabledBorder: const OutlineInputBorder(
                                   borderRadius: BorderRadius.all(Radius.circular(20))
                                 ),
-                                hintText: "Write your short bio in about 10 lines",
+                                hintText: "Write your short bio in about 10 lines*",
                                 hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
                             ),
                           ),
                         ),
 
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                      height: 70,
+                      width:  70,
+                      padding: EdgeInsets.all(20),
+                      margin: EdgeInsets.only(top: 1),
+                      child: Stack(
+                        alignment: Alignment.topLeft,
+                        children: [
+                          Container(
+                              height: 20,
+                              width: 45,
+                              margin: EdgeInsets.only(top:20),
+                              decoration: BoxDecoration(
+                                  color: shade1,
+                                  borderRadius: BorderRadius.circular(40),
+                                  border: Border.all(
+                                      color: shade1,
+                                      width: 2
+                                  )
+                              )
+                          ),
+                          Container(
+                            height: 70,
+                            width: 70,
+                            margin: EdgeInsets.only(left: 1, top: 0),
+                            child: IconButton(
+                              icon: Icon(Icons.done, color: Colors.white),
+                              iconSize: 30,
+                              onPressed:() {
+                                setState(() {
+                                  bio = bioController.text;
+                                });
+                              },
+                              ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 70,
+                      width:  70,
+                      padding: EdgeInsets.all(20),
+                      margin: EdgeInsets.only(top: 1),
+                      child: Stack(
+                        alignment: Alignment.topLeft,
+                        children: [
+                          Container(
+                              height: 20,
+                              width: 40,
+                              margin: EdgeInsets.only(top:20),
+                              decoration: BoxDecoration(
+                                  color: shade1,
+                                  borderRadius: BorderRadius.circular(40),
+                                  border: Border.all(
+                                      color: shade1,
+                                      width: 2
+                                  )
+                              )
+                          ),
+                          Container(
+                            height: 70,
+                            width: 50,
+                            margin: EdgeInsets.only(left: 0, top: 0),
+                            child: IconButton(
+                              icon: Icon(Icons.close, color: Colors.white),
+                              iconSize: 30,
+                              onPressed:() {
+                                setState(() {
+                                  bioController.text = "";
+                                });
+                              },
+                              ),
+                          )
+                        ],
+                      ),
+                    ),
+                      ],
                     ),
                     Container(
                       height: 90,
@@ -464,10 +554,10 @@ class _SignupPageState extends State<SignupPage> {
                               width: 100,
                               margin: EdgeInsets.only(top:30),
                               decoration: BoxDecoration(
-                                  color: Colors.green.shade900,
+                                  color: shade1,
                                   borderRadius: BorderRadius.circular(40),
                                   border: Border.all(
-                                      color: Colors.green.shade900,
+                                      color: shade1,
                                       width: 2
                                   )
                               )
@@ -511,7 +601,7 @@ class _SignupPageState extends State<SignupPage> {
 
                         ),
                         addButtonWidget: _buildAddButton(),
-                        chipsColor: Colors.green,
+                        chipsColor: shade1,
                         chipsFontColor: Colors.white,
                         deleteIcon: Icon(Icons.cancel,color: Colors.white),
                         chipsPadding: EdgeInsets.all(2.0),
@@ -535,7 +625,7 @@ class _SignupPageState extends State<SignupPage> {
                           left: MediaQuery.of(context).size.width * 0.05,
                           right: MediaQuery.of(context).size.width * 0.05),
                       child: RaisedButton(
-                        color: Colors.green,
+                        color: shade1,
                         onPressed: () async {
                           // if (_formKey.currentState.validate()) {
                           //   try {
@@ -610,11 +700,12 @@ class _SignupPageState extends State<SignupPage> {
 
 
 Widget _buildAddButton() {
+  Color shade1 = Color(0xFF7447d8);
   return Container(
     padding: EdgeInsets.all(8.0),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.all(Radius.circular(20.0)),
-      color: Colors.green,
+      color: shade1,
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
