@@ -1,3 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flushbar/flushbar.dart';
 import"package:flutter/cupertino.dart";
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -17,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController;
   String email;
   String pass;
-
+   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
   VideoPlayerController _controller;
   void initState() {
     super.initState();
@@ -54,86 +57,144 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            SingleChildScrollView(
-              child: Container(
-                decoration: BoxDecoration(
-                ),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 100,
-                      width:  200,
-                      padding: EdgeInsets.all(20),
-                      margin: EdgeInsets.only(top: 100),
-                      child: Stack(
-                        alignment: Alignment.topLeft,
-                        children: [
-                          Container(
-                            height: 100,
-                              width: 300,
-                            margin: EdgeInsets.only(top:30),
-                            decoration: BoxDecoration(
-                              color: shade1,
-                              borderRadius: BorderRadius.circular(40),
-                              border: Border.all(
+            Form(
+              key: _loginFormKey,
+              child: SingleChildScrollView(
+                child: Container(
+                  decoration: BoxDecoration(
+                  ),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 100,
+                        width:  200,
+                        padding: EdgeInsets.all(20),
+                        margin: EdgeInsets.only(top: 100),
+                        child: Stack(
+                          alignment: Alignment.topLeft,
+                          children: [
+                            Container(
+                              height: 100,
+                                width: 300,
+                              margin: EdgeInsets.only(top:30),
+                              decoration: BoxDecoration(
                                 color: shade1,
-                                width: 2
+                                borderRadius: BorderRadius.circular(40),
+                                border: Border.all(
+                                  color: shade1,
+                                  width: 2
+                                )
                               )
+                            ),
+                            Container(
+                              height: 400,
+                              width: 400,
+                              margin: EdgeInsets.only(left: 10),
+                              child: Text("Login",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 50,
+                                  fontWeight: FontWeight.bold,
+                                ),),
                             )
-                          ),
-                          Container(
-                            height: 400,
-                            width: 400,
-                            margin: EdgeInsets.only(left: 10),
-                            child: Text("Login",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 50,
-                                fontWeight: FontWeight.bold,
-                              ),),
-                          )
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: MediaQuery.of(context).size.height*0.10,),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: SingleChildScrollView(
-                        child: Container(
-                      decoration: BoxDecoration(
-                    color: Colors.grey.shade900,
-                        borderRadius: BorderRadius.circular(150)
-                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height*0.10,),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: SingleChildScrollView(
+                          child: Container(
+                        decoration: BoxDecoration(
+                      color: Colors.grey.shade900,
+                          borderRadius: BorderRadius.circular(150)
+                        ),
+                            margin: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.height * 0.03,
+                                left: MediaQuery.of(context).size.width * 0.05,
+                                right: MediaQuery.of(context).size.width * 0.05),
+                            child: TextFormField(
+                              autocorrect: true,
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                Pattern pattern =
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                                RegExp regex = new RegExp(pattern);
+                                if (!(regex.hasMatch(value) && value.isNotEmpty))
+                                  return "Please enter a valid Email-ID";
+                                else
+                                  return null;
+                              },
+                              onSaved: (value) => email = value.trim(),
+                              obscureText: false,
+                              onChanged: (val) {
+                                setState(() => email = val);
+                              },
+                              autofocus: false,
+                              style: TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
 
-                          margin: EdgeInsets.only(
-                              top: MediaQuery.of(context).size.height * 0.03,
+                                  errorStyle: TextStyle(color: Colors.white),
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(150)),
+                                    borderSide:
+                                    const BorderSide(color: Colors.black, width: 0.0),
+                                  ),
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(150)),
+                                    borderSide:
+                                    const BorderSide(color: Colors.black, width: 0.0),
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.email,
+                                    color: Colors.white,
+                                    size: 25,
+                                  ),
+                                  hintText: "Enter your Email ID",
+                                  hintStyle: TextStyle(color: Colors.white, fontSize: 15),
+                                  labelText: "Email",
+                                  labelStyle: TextStyle(color: Colors.white, fontSize: 18)
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade900,
+                            borderRadius: BorderRadius.circular(150),
+                          ),
+                           margin: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.04,
                               left: MediaQuery.of(context).size.width * 0.05,
                               right: MediaQuery.of(context).size.width * 0.05),
                           child: TextFormField(
+                            enabled: true,
                             autocorrect: true,
-                            controller: emailController,
+                            controller: passwordController,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
-                              Pattern pattern =
-                                  r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                              RegExp regex = new RegExp(pattern);
-                              if (!(regex.hasMatch(value) && value.isNotEmpty))
-                                return "Please enter a valid Email-ID";
-                              else
+                              if (value.length >= 6 && value.isNotEmpty)
                                 return null;
+                              else
+                                return "Password must be Greater than 6 characters";
                             },
-                            onSaved: (value) => email = value.trim(),
-                            obscureText: false,
+                            onSaved: (value) => pass = value.trim(),
+                            obscureText: true,
                             onChanged: (val) {
-                              setState(() => email = val);
+                              setState(() => pass = val);
                             },
                             autofocus: false,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
-
-                                errorStyle: TextStyle(color: Colors.white),
+                              // errorText: "Wrong Pass Cyuka Blyat",
+                                border: InputBorder.none,
+                                errorStyle: TextStyle(color: Colors.red),
                                 enabledBorder: const OutlineInputBorder(
                                   borderRadius: BorderRadius.all(Radius.circular(150)),
                                   borderSide:
@@ -144,185 +205,96 @@ class _LoginPageState extends State<LoginPage> {
                                   borderSide:
                                   const BorderSide(color: Colors.black, width: 0.0),
                                 ),
+                              
                                 prefixIcon: Icon(
-                                  Icons.email,
+                                  Icons.security,
                                   color: Colors.white,
                                   size: 25,
                                 ),
-                                hintText: "Enter your Email ID",
+                                hintText: "Enter your password",
                                 hintStyle: TextStyle(color: Colors.white, fontSize: 15),
-                                labelText: "Email",
-                                labelStyle: TextStyle(color: Colors.white, fontSize: 18)
-                            ),
+                                labelText: "Password",
+                                labelStyle: TextStyle(color: Colors.white, fontSize: 18)),
                           ),
                         ),
                       ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade900,
-                          borderRadius: BorderRadius.circular(150),
-                        ),
-                         margin: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height * 0.04,
+                      Container(
+                        margin: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height * 0.049,
+                            left: MediaQuery.of(context).size.width * 0.65),
+                        child: RichText(
+                            text: TextSpan(
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => HomePage()));
+                                },
+                              text: "Forgot Password ?",
+                              style: TextStyle(
+                                  color: shade1,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900),
+                            )),
+                      ),
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.07,
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        margin: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height * 0.02,
                             left: MediaQuery.of(context).size.width * 0.05,
                             right: MediaQuery.of(context).size.width * 0.05),
-                        child: TextFormField(
-                          enabled: true,
-                          autocorrect: true,
-                          // controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value.length >= 6 && value.isNotEmpty)
-                              return "Looks good";
-                            else
-                              return "Password must be Greater than 6 characters";
+                        child: RaisedButton(
+                          color: shade1,
+                          onPressed: () async {
+                            if (_loginFormKey.currentState.validate()) {
+                               try{
+                                 FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: pass)
+                                 .then((value) => Navigator.pushAndRemoveUntil(
+                                   context, MaterialPageRoute(
+                                     builder: (context) => HomePage()), 
+                                     (_) => false)
+                                     );
+                                  
+                               }
+                               catch(e)
+                               {
+                                 print(e);
+                               }
+                            }
                           },
-                          onSaved: (value) => pass = value.trim(),
-                          obscureText: false,
-                          onChanged: (val) {
-                            setState(() => pass = val);
-                          },
-                          autofocus: false,
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            // errorText: "Wrong Pass Cyuka Blyat",
-                              border: InputBorder.none,
-                              errorStyle: TextStyle(color: Colors.red),
-                              enabledBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(150)),
-                                borderSide:
-                                const BorderSide(color: Colors.black, width: 0.0),
-                              ),
-                              focusedBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(150)),
-                                borderSide:
-                                const BorderSide(color: Colors.black, width: 0.0),
-                              ),
-                            
-                              prefixIcon: Icon(
-                                Icons.security,
+                          child: Text(
+                            "LOGIN",
+                            style: TextStyle(
                                 color: Colors.white,
-                                size: 25,
-                              ),
-                              hintText: "Enter your password",
-                              hintStyle: TextStyle(color: Colors.white, fontSize: 15),
-                              labelText: "Password",
-                              labelStyle: TextStyle(color: Colors.white, fontSize: 18)),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900),
+                          ),
+                          elevation: 25,
                         ),
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.049,
-                          left: MediaQuery.of(context).size.width * 0.65),
-                      child: RichText(
-                          text: TextSpan(
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => HomePage()));
-                              },
-                            text: "Forgot Password ?",
-                            style: TextStyle(
-                                color: shade1,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w900),
-                          )),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.07,
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.02,
-                          left: MediaQuery.of(context).size.width * 0.05,
-                          right: MediaQuery.of(context).size.width * 0.05),
-                      child: RaisedButton(
-                        color: shade1,
-                        onPressed: () async {
-                          // if (_formKey.currentState.validate()) {
-                          //   try {
-                          //     showAlertDialog(context);
-                          //     dynamic result = await _auth.signInWithEmailAndPassword(
-                          //         _email, _pass);
-                          //     Navigator.pop(context);
-                          //     if (result == null) {
-                          //       setState(() {
-                          //         Flushbar(
-                          //           borderRadius: 8.0,
-                          //           title: "Invalid Password/Email",
-                          //           message:
-                          //           "Please enter correct Email and Password",
-                          //           flushbarPosition: FlushbarPosition.BOTTOM,
-                          //           flushbarStyle: FlushbarStyle.FLOATING,
-                          //           reverseAnimationCurve: Curves.decelerate,
-                          //           forwardAnimationCurve: Curves.bounceIn,
-                          //           backgroundColor: Colors.black,
-                          //           mainButton: FlatButton(
-                          //               onPressed: () {
-                          //                 Navigator.pop(context);
-                          //               },
-                          //               child: Text(
-                          //                 "OK",
-                          //                 style: TextStyle(color: Colors.white),
-                          //               )),
-                          //           boxShadows: [
-                          //             BoxShadow(
-                          //                 color: Colors.blue[800],
-                          //                 offset: Offset(0.0, 5.0),
-                          //                 blurRadius: 8.0)
-                          //           ],
-                          //           margin:
-                          //           EdgeInsets.only(bottom: 8, left: 8, right: 8),
-                          //           isDismissible: true,
-                          //           duration: Duration(seconds: 10),
-                          //           icon: Icon(
-                          //             Icons.error_outline,
-                          //             color: Colors.white,
-                          //           ),
-                          //         )..show(context);
-                          //       });
-                          //     }
-                          //   } catch (e) {
-                          //     var errorr = e.toString();
-                          //     print(errorr);
-                          //   }
-                          // }
-                        },
-                        child: Text(
-                          "LOGIN",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900),
-                        ),
-                        elevation: 25,
+                      Container(
+                        margin: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height * 0.03,
+                            left: MediaQuery.of(context).size.width * 0.05),
+                        child: RichText(
+                            text: TextSpan(
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => SignupPage()));
+                                },
+                              text: "Don't have an account?? Sign up",
+                              style: TextStyle(
+                                  color: shade1,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900),
+                            )),
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.03,
-                          left: MediaQuery.of(context).size.width * 0.05),
-                      child: RichText(
-                          text: TextSpan(
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => SignupPage()));
-                              },
-                            text: "Don't have an account?? Sign up",
-                            style: TextStyle(
-                                color: shade1,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w900),
-                          )),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
