@@ -17,6 +17,144 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
 
+
+showAlertDialog(BuildContext context) {
+  AlertDialog alert = AlertDialog(
+    backgroundColor: Colors.black,
+    content: new Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircularProgressIndicator(),
+        ),
+        SizedBox(width: 20),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+              margin: EdgeInsets.only(left: 5),
+              child: Text(
+                "Loading",
+                style: TextStyle(color: Colors.white),
+              )),
+        ),
+      ],
+    ),
+  );
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+Future<void> _emailAlredyExists() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: Text('Invalid Email Id!!',
+        style: TextStyle(color: Colors.white)),
+        content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('The email address you entered is already in use',
+                style: TextStyle(color: Colors.white)
+                ,),
+                SizedBox(height: 50),
+                Text('Please try again',
+                style: TextStyle(color: Colors.white),),
+              ],
+            ),
+          ),
+        
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Try Again', style: TextStyle(color: shade1),),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+Future<void> _invalidEmail() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: Text('Invalid Email Id!!',
+        style: TextStyle(color: Colors.white)),
+        content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('The email address you entered is not acceptable',
+                style: TextStyle(color: Colors.white)
+                ,),
+                SizedBox(height: 50),
+                Text('Please try again',
+                style: TextStyle(color: Colors.white),),
+              ],
+            ),
+          ),
+        
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Try Again', style: TextStyle(color: shade1),),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _weakPassword() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: Text('Weal Password',
+        style: TextStyle(color: Colors.white)),
+        content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('the password you entered is very small',
+                style: TextStyle(color: Colors.white)
+                ,),
+                SizedBox(height: 50),
+                Text('Please try again',
+                style: TextStyle(color: Colors.white),),
+              ],
+            ),
+          ),
+        
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Try Again', style: TextStyle(color: shade1),),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+
   TextEditingController nameController;
   TextEditingController emailController;
   TextEditingController passController;
@@ -33,12 +171,9 @@ class _SignupPageState extends State<SignupPage> {
   String interest;
 
   FirebaseAuth _auth = FirebaseAuth.instance;
- 
 
   String text = "Nothing to show";
   VideoPlayerController _controller;
-
-
 
    bool validateAndSave() {
     final FormState form = _signUpFormKey.currentState;
@@ -48,7 +183,37 @@ class _SignupPageState extends State<SignupPage> {
       return false;
     }
   }
-  
+  Route _loginRoute()
+  {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child){
+        var begin = Offset(0.0, 1.0);
+        var end = Offset.zero;
+        var curve = Curves.easeOut;
+
+        var tween = Tween (begin: begin , end :end).chain(CurveTween(curve: curve));
+        return SlideTransition(position: animation.drive(tween),
+        child : child);
+      }
+      );
+  }
+  Route _homeRoute()
+  {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child){
+        var begin = Offset(0.0, 1.0);
+        var end = Offset.zero;
+        var curve = Curves.easeIn;
+
+        var tween = Tween (begin: begin , end :end).chain(CurveTween(curve: curve));
+        return SlideTransition(position: animation.drive(tween),
+        child : child);
+      }
+      );
+  }
+
   @override
   void initState() {
     
@@ -96,6 +261,7 @@ class _SignupPageState extends State<SignupPage> {
                 Form(
                   key: _signUpFormKey,
                      child: SingleChildScrollView(
+                       scrollDirection: Axis.vertical,
                     child: Container(
                     decoration: BoxDecoration(
                     ),
@@ -133,7 +299,7 @@ class _SignupPageState extends State<SignupPage> {
                                     size: 30
                                     ,),
                                   onPressed: (){
-                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                                    Navigator.pushReplacement(context, _loginRoute());
                                   }
                               )
                               )
@@ -479,91 +645,12 @@ class _SignupPageState extends State<SignupPage> {
                             ),
 
                         ),
-                        Row(
-                          children: [
-                            Container(
-                          height: 70,
-                          width:  70,
-                          padding: EdgeInsets.all(20),
-                          margin: EdgeInsets.only(top: 1),
-                          child: Stack(
-                            alignment: Alignment.topLeft,
-                            children: [
-                              Container(
-                                  height: 20,
-                                  width: 45,
-                                  margin: EdgeInsets.only(top:20),
-                                  decoration: BoxDecoration(
-                                      color: shade1,
-                                      borderRadius: BorderRadius.circular(40),
-                                      border: Border.all(
-                                          color: shade1,
-                                          width: 2
-                                      )
-                                  )
-                              ),
-                              Container(
-                                height: 70,
-                                width: 70,
-                                margin: EdgeInsets.only(left: 1, top: 0),
-                                child: IconButton(
-                                  icon: Icon(Icons.done, color: Colors.white),
-                                  iconSize: 30,
-                                  onPressed:() {
-                                    setState(() {
-                                      bio = bioController.text;
-                                    });
-                                  },
-                                  ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Container(
-                          height: 70,
-                          width:  70,
-                          padding: EdgeInsets.all(20),
-                          margin: EdgeInsets.only(top: 1),
-                          child: Stack(
-                            alignment: Alignment.topLeft,
-                            children: [
-                              Container(
-                                  height: 20,
-                                  width: 40,
-                                  margin: EdgeInsets.only(top:20),
-                                  decoration: BoxDecoration(
-                                      color: shade1,
-                                      borderRadius: BorderRadius.circular(40),
-                                      border: Border.all(
-                                          color: shade1,
-                                          width: 2
-                                      )
-                                  )
-                              ),
-                              Container(
-                                height: 70,
-                                width: 50,
-                                margin: EdgeInsets.only(left: 0, top: 0),
-                                child: IconButton(
-                                  icon: Icon(Icons.close, color: Colors.white),
-                                  iconSize: 30,
-                                  onPressed:() {
-                                    setState(() {
-                                      bioController.text = "";
-                                    });
-                                  },
-                                  ),
-                              )
-                            ],
-                          ),
-                        ),
-                          ],
-                        ),
+                        
                         Container(
                           height: 90,
                           width:  250,
-                          padding: EdgeInsets.all(20),
-                          margin: EdgeInsets.only(top: 5),
+                          padding: EdgeInsets.only(left: 20, ),
+                          margin: EdgeInsets.only(top: 1),
                           child: Stack(
                             alignment: Alignment.topLeft,
                             children: [
@@ -618,6 +705,8 @@ class _SignupPageState extends State<SignupPage> {
                               labelStyle: TextStyle(color: Colors.grey)
 
                             ),
+                            direction: AxisDirection.up,
+                            getImmediateSuggestions: true,
                             addButtonWidget: _buildAddButton(),
                             chipsColor: shade1,
                             chipsFontColor: Colors.white,
@@ -649,19 +738,34 @@ class _SignupPageState extends State<SignupPage> {
                               {
                                 if(passController.text == cnfPassController.text)
                                 {
-                                  FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailController.text, password: passController.text).then((currentUser) => FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(currentUser.user.uid)
-                                  .set(
-                                    {
-                                    "uid": currentUser.user.uid,
-                                    "name": nameController.text,
-                                    "email": emailController.text,
+                                  // showAlertDialog(context);
+                                  try{
+                                   UserCredential userCredential= await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailController.text, password: passController.text);
+                                    FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(userCredential.user.uid)
+                                    .set({
+                                      'bio': bioController.text,
+                                      'name': nameController.text,
+                                      'email': emailController.text,
+                                      'intrest': text,
+                                      'uid': userCredential.user.uid,
+                                    });
+                                  Navigator.pushAndRemoveUntil(context, _homeRoute(), (route) => false);
+
+                                  } on FirebaseAuthException catch(err){
+                                    if(err.code == "email-already-in-use"){
+                                      _emailAlredyExists();
+                                      print("email already exists in database");
+                                    } else if(err.code == "invalid-email"){
+                                      _invalidEmail();
+                                      print("email entered is invalid ");
+                                    } else if(err.code == "weak-password"){
+                                      _weakPassword();
+                                      print("password is weak just like you");
+                                    }
                                   }
-                                  ).then((result) => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                                    builder: (context) => HomePage(),
-                                  ), (_) => false)),
-                                  ).catchError((err) => print(err));
+                                  
                                 }
                               }
                             },

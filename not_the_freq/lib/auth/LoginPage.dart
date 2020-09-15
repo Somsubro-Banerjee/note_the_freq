@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flushbar/flushbar.dart';
@@ -16,6 +19,171 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+Future<void> _userNotFound() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: Text('No user was found with that email id !! ',
+        style: TextStyle(color: Colors.white)),
+        content: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+            child: ListBody(
+              children: <Widget>[
+                Text('please check your email and try again',
+                style: TextStyle(color: Colors.white)),
+                SizedBox(height: 50),
+                Text('click OK to continue',
+                style: TextStyle(color: Colors.white)),
+              ],
+            ),
+          ),
+       
+        actions: <Widget>[
+          FlatButton(
+            child: Text('OK',
+            style: TextStyle(color: shade1)),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _invalidEmail() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: Text('Invalid Email Id!!',
+        style: TextStyle(color: Colors.white)),
+        content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('The email address you entered is invalid',
+                style: TextStyle(color: Colors.white)
+                ,),
+                SizedBox(height: 50),
+                Text('Please try again',
+                style: TextStyle(color: Colors.white),),
+              ],
+            ),
+          ),
+        
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Try Again', style: TextStyle(color: shade1),),
+            onPressed: () {
+              Navigator.of(context).pop();
+              passwordController.clear();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+Future<void> _wrongPassword() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: Text('Email and password does not match!!',
+        style: TextStyle(color: Colors.white)),
+        content:
+           SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Please try again',
+                style: TextStyle(color: Colors.white)),
+                SizedBox(height: 50),
+                Text('press continue to retry...',
+                style: TextStyle(color: Colors.white)),
+              ],
+            ),
+          ),
+        
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Continue',
+            style: TextStyle(color: shade1)),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+  showAlertDialog(BuildContext context) {
+  AlertDialog alert = AlertDialog(
+    backgroundColor: Colors.black,
+    content: new Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircularProgressIndicator(),
+        ),
+        SizedBox(width: 20),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+              margin: EdgeInsets.only(left: 5),
+              child: Text(
+                "Loading",
+                style: TextStyle(color: Colors.white),
+              )),
+        ),
+      ],
+    ),
+  );
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+showAlertDialogs(BuildContext context) {
+
+  // set up the button
+  Widget okButton = FlatButton(
+    child: Text("OK"),
+    onPressed: () { },
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("Invalid Credentials"),
+    content: Text("Email Id and Password doesnot match"),
+    actions: [
+      okButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+  FirebaseAuth _auth;
+ 
+
   TextEditingController emailController;
   TextEditingController passwordController;
   String email;
@@ -33,6 +201,21 @@ class _LoginPageState extends State<LoginPage> {
         // Ensure the first frame is shown after the video is initialized.
         setState(() {});
       });
+  }
+  Route _homeRoute()
+  {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child){
+        var begin = Offset(0.0, 1.0);
+        var end = Offset.zero;
+        var curve = Curves.easeIn;
+
+        var tween = Tween (begin: begin , end :end).chain(CurveTween(curve: curve));
+        return SlideTransition(position: animation.drive(tween),
+        child : child);
+      }
+      );
   }
   @override
   void dispose() {
@@ -124,7 +307,7 @@ class _LoginPageState extends State<LoginPage> {
                                     r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
                                 RegExp regex = new RegExp(pattern);
                                 if (!(regex.hasMatch(value) && value.isNotEmpty))
-                                  return "Please enter a valid Email-ID";
+                                  return null;
                                 else
                                   return null;
                               },
@@ -137,7 +320,7 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(color: Colors.white),
                               decoration: InputDecoration(
 
-                                  errorStyle: TextStyle(color: Colors.white),
+                                  errorStyle: TextStyle(color: Colors.red),
                                   enabledBorder: const OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(150)),
                                     borderSide:
@@ -182,7 +365,7 @@ class _LoginPageState extends State<LoginPage> {
                               if (value.length >= 6 && value.isNotEmpty)
                                 return null;
                               else
-                                return "Password must be Greater than 6 characters";
+                                return null;
                             },
                             onSaved: (value) => pass = value.trim(),
                             obscureText: true,
@@ -226,10 +409,7 @@ class _LoginPageState extends State<LoginPage> {
                             text: TextSpan(
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => HomePage()));
+                                  print("hheheeheee");
                                 },
                               text: "Forgot Password ?",
                               style: TextStyle(
@@ -248,24 +428,39 @@ class _LoginPageState extends State<LoginPage> {
                         child: RaisedButton(
                           color: shade1,
                           onPressed: () async {
-                            if (_loginFormKey.currentState.validate()) {
-                               try{
-                                 FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: pass)
-                                 .then((value) => Navigator.pushAndRemoveUntil(
-                                   context, MaterialPageRoute(
-                                     builder: (context) => HomePage()), 
-                                     (_) => false)
-                                     );
-                                  
-                               }
-                               catch(e)
-                               {
-                                 print(e);
-                               }
+                            if (_loginFormKey.currentState.validate()){
+                              try{
+                                  UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                                       email: email,
+                                       password: pass,
+                                     ).then((value) {
+                                       showAlertDialog(context);
+                                       Navigator.pushAndRemoveUntil(context, _homeRoute(), (_) => false);
+                                       print('user found with email: '+value.user.email);
+                                       return value;
+                                     });
+                              } on FirebaseAuthException catch (e){
+                                if (e.code == "user-not-found"){
+                                  _userNotFound();
+                                  print("user not found ");
+                                } else if(e.code == 'invalid-email'){
+                                  _invalidEmail();
+                                  print('invalid email address');
+                                } else if (e.code == 'wrong-password'){
+                                  _wrongPassword();
+                                  print('invalid password try again');
+                                }
+                              }
+                            }
+                            else{
+                              showDialog(
+                              context: context,
+                              builder: (_) => FunkyOverlay(),
+                              );
                             }
                           },
                           child: Text(
-                            "LOGIN",
+                            "LOGIN", 
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -282,6 +477,7 @@ class _LoginPageState extends State<LoginPage> {
                             text: TextSpan(
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
+                                  // showAlertDialog(context);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (context) => SignupPage()));
@@ -306,3 +502,52 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 
+class FunkyOverlay extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => FunkyOverlayState();
+}
+
+class FunkyOverlayState extends State<FunkyOverlay>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  Animation<double> scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 450));
+    scaleAnimation =
+        CurvedAnimation(parent: controller, curve: Curves.elasticInOut);
+
+    controller.addListener(() {
+      setState(() {});
+    });
+
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Material(
+        color: Colors.transparent,
+        child: ScaleTransition(
+          scale: scaleAnimation,
+          child: Container(
+            decoration: ShapeDecoration(
+                color: Colors.grey.shade900,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0))),
+            child: Padding(
+              padding: const EdgeInsets.all(50.0),
+              child: Text("Email and password cannot be empty!",
+              style: TextStyle(color: Colors.white, fontSize: 20),),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
