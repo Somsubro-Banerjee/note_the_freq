@@ -30,6 +30,12 @@ dependencies:
   flushbar: ^1.10.4
   cloud_firestore: ^0.14.0+2
   firebase_core : ^0.5.0
+  image_picker: ^0.6.7+7
+  firebase_storage: any
+  permission_handler: ^5.0.1+1
+  animations: ^1.1.2
+  flare_flutter: ^2.0.6
+  curved_navigation_bar: ^0.3.4
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -59,6 +65,8 @@ flutter:
     - assets/images/4.jpg
     - assets/images/5.jpg
     - assets/videos/vid1.mp4
+    - assets/animations/loading.flr
+    - assets/animations/cosmos.flr
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

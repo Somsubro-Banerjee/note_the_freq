@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:not_the_freq/auth/LoginPage.dart';
 import 'package:not_the_freq/ui/HomeScreen.dart';
 import 'package:video_player/video_player.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_tagging/flutter_tagging.dart';
-
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class SignupPage extends StatefulWidget {
   @override
   _SignupPageState createState() => _SignupPageState();
@@ -83,6 +87,42 @@ Future<void> _emailAlredyExists() async {
     },
   );
 }
+
+Future<void> _accountCreated() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: Text('Account created succesfully',
+        style: TextStyle(color: Colors.white)),
+        content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('press continue to login',
+                style: TextStyle(color: Colors.white)
+                ,),
+                // SizedBox(height: 50),
+                // Text('Please try again',
+                // style: TextStyle(color: Colors.white),),
+              ],
+            ),
+          ),
+        
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Continue', style: TextStyle(color: shade1),),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(context, _loginRoute(), (route) => false);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 Future<void> _invalidEmail() async {
   return showDialog<void>(
     context: context,
@@ -90,12 +130,13 @@ Future<void> _invalidEmail() async {
     builder: (BuildContext context) {
       return AlertDialog(
         backgroundColor: Colors.grey.shade900,
-        title: Text('Invalid Email Id!!',
+        title: Text(
+          'Invalid Email Id!!',
         style: TextStyle(color: Colors.white)),
         content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('The email address you entered is not acceptable',
+                Text('The email address you entered is not acceptable or already in use',
                 style: TextStyle(color: Colors.white)
                 ,),
                 SizedBox(height: 50),
@@ -154,7 +195,105 @@ Future<void> _weakPassword() async {
 }
 
 
+Future<void> _imagePicker() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: Text('Pick your Image!!!',
+        style: TextStyle(color: Colors.white)),
+        content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Please choose where to upload your image from',
+                style: TextStyle(color: Colors.white)
+                ,),
+              ],
+            ),
+          ),
+        
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Camera', style: TextStyle(color: shade1),),
+            onPressed: () {
+              getImageFromCamera();
+              Navigator.of(context).pop();
+            },
+          ),
 
+          FlatButton(
+            child: Text('Gallery', style: TextStyle(color: shade1),),
+            onPressed: () {
+              getImageFromGallery();
+              Navigator.of(context).pop();
+            },
+          ),
+
+          FlatButton(
+            child: Text('Cancel', style: TextStyle(color: shade1),),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      );
+    },
+  );
+}
+File _image;
+final _picker = ImagePicker();
+Future getImageFromGallery() async {
+    final image = await _picker.getImage(source: ImageSource.gallery);
+    final File file =File(image.path); 
+    setState(() {
+      _image = file;
+      // updateProfilePicture();
+    });
+  }
+  Future getImageFromCamera() async {
+    final image = await _picker.getImage(source: ImageSource.camera);
+    final File file =File(image.path); 
+    setState(() {
+      _image = file;
+      // updateProfilePicture();
+    });
+  }
+
+  updateProfilePicture() async {
+    
+    StorageReference storageRefrence = FirebaseStorage.instance.ref()
+    .child("Profile pictures/${FirebaseAuth.instance.currentUser.displayName}/${FirebaseAuth.instance.currentUser.uid}/${_image.path}");
+    StorageUploadTask storageUploadTask = storageRefrence.putFile(_image);
+    await storageUploadTask.onComplete;
+    print('file uploaded');
+    storageRefrence.getDownloadURL().then((url) {
+      FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.uid).update({"profilePic" : url}).catchError((e){
+      print(e.toString());
+    });
+      setState(() {
+        profilePic = url;
+        if(FirebaseAuth.instance.currentUser != null){
+        FirebaseAuth.instance.currentUser.updateProfile(photoURL: url, displayName: name);
+        print(url);
+        print(name);
+    }
+    });
+    });
+   
+  }
+
+  // getPhoto()async
+  // {
+  //   User user = await _auth.currentUser;
+  //   profilePic = user.photoURL;
+  // }
+
+  bool x = false;
+  bool y = false;
+
+  
   TextEditingController nameController;
   TextEditingController emailController;
   TextEditingController passController;
@@ -169,6 +308,7 @@ Future<void> _weakPassword() async {
   String cnfPass;
   String bio;
   String interest;
+  String profilePic;
 
   FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -201,7 +341,7 @@ Future<void> _weakPassword() async {
   Route _homeRoute()
   {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
+      pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
       transitionsBuilder: (context, animation, secondaryAnimation, child){
         var begin = Offset(0.0, 1.0);
         var end = Offset.zero;
@@ -216,7 +356,6 @@ Future<void> _weakPassword() async {
 
   @override
   void initState() {
-    
     nameController = new TextEditingController();
     emailController = new TextEditingController();
     passController = new TextEditingController();
@@ -310,7 +449,7 @@ Future<void> _weakPassword() async {
                           height: 100,
                           width:  250,
                           padding: EdgeInsets.all(20),
-                          margin: EdgeInsets.only(top: 70),
+                          margin: EdgeInsets.only(top:0),
                           child: Stack(
                             alignment: Alignment.topLeft,
                             children: [
@@ -342,6 +481,59 @@ Future<void> _weakPassword() async {
                           ),
                         ),
                         Container(
+                          height: 200,
+                          width: 200,
+                          margin: EdgeInsets.only(
+                            left: MediaQuery.of(context).size.width*0.24,
+                            top: MediaQuery.of(context).size.height*0.04),
+                          child: CircleAvatar(
+                            backgroundColor: shade1,
+                            radius: 100,
+                            backgroundImage: _image == null ? AssetImage('assets/images/1.jpg'): FileImage(_image),
+                          ),
+                        ),
+                        Container(
+                          height: 90,
+                          width:  250,
+                          padding: EdgeInsets.all(10),
+                          margin: EdgeInsets.only(top: 0, left:120 ),
+                          child: Stack(
+                            alignment: Alignment.topLeft,
+                            children: [
+                              Container(
+                                  height: 20,
+                                  width: 120,
+                                  margin: EdgeInsets.only(top:30),
+                                  decoration: BoxDecoration(
+                                      color: shade1,
+                                      borderRadius: BorderRadius.circular(40),
+                                      border: Border.all(
+                                          color: shade1,
+                                          width: 2
+                                      )
+                                  )
+                              ),
+                              Container(
+                                height: 20,
+                                width: 135,
+                                margin: EdgeInsets.only(left: 0, top: 20),
+                                child: FlatButton(
+                                  onPressed: (){
+                                    _imagePicker();
+                                    // Navigator.of(context).pop();
+                                  },
+                                     child: Text("Add Picture",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Container(
                           width: MediaQuery.of(context).size.width,
                           child: SingleChildScrollView(
                             child: Container(
@@ -351,7 +543,7 @@ Future<void> _weakPassword() async {
                               ),
 
                               margin: EdgeInsets.only(
-                                  top: MediaQuery.of(context).size.height * 0.03,
+                                  top: MediaQuery.of(context).size.height * 0.04,
                                   left: MediaQuery.of(context).size.width * 0.05,
                                   right: MediaQuery.of(context).size.width * 0.05),
                               child: TextFormField(
@@ -395,123 +587,167 @@ Future<void> _weakPassword() async {
                         ),
                         // SizedBox(height: MediaQuery.of(context).size.height*0.05,),
                         Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: SingleChildScrollView(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.grey.shade900,
-                                  borderRadius: BorderRadius.circular(150)
-                              ),
-
-                              margin: EdgeInsets.only(
-                                  top: MediaQuery.of(context).size.height * 0.03,
-                                  left: MediaQuery.of(context).size.width * 0.05,
-                                  right: MediaQuery.of(context).size.width * 0.05),
-                              child: TextFormField(
-                                autocorrect: true,
-                                controller: emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (value) {
-                                  Pattern pattern =
-                                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                                  RegExp regex = new RegExp(pattern);
-                                  if (!(regex.hasMatch(value) && value.isNotEmpty))
-                                    return "Please enter a valid Email-ID";
-                                  else
-                                    return null;
-                                },
-                                onSaved: (value) => email = value.trim(),
-                                obscureText: false,
-                                onChanged: (val) {
-                                  setState(() => email = val);
-                                },
-                                autofocus: false,
-                                style: TextStyle(color: Colors.white),
-                                decoration: InputDecoration(
-
-                                    errorStyle: TextStyle(color: Colors.white),
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(Radius.circular(150)),
-                                      borderSide:
-                                      const BorderSide(color: Colors.black, width: 0.0),
-                                    ),
-                                    focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(Radius.circular(150)),
-                                      borderSide:
-                                      const BorderSide(color: Colors.black, width: 0.0),
-                                    ),
-                                   
-                                    prefixIcon: Icon(
-                                      Icons.email,
-                                      color: Colors.white,
-                                      size: 25,
-                                    ),
-                                    hintText: "Enter your Email ID",
-                                    hintStyle: TextStyle(color: Colors.white, fontSize: 15),
-                                    labelText: "Email",
-                                    labelStyle: TextStyle(color: Colors.white, fontSize: 18)
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
+                        width: MediaQuery.of(context).size.width,
+                        child: SingleChildScrollView(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade900,
-                              borderRadius: BorderRadius.circular(150),
-                            ),
+                                color: Colors.grey.shade900,
+                                borderRadius: BorderRadius.circular(150)),
                             margin: EdgeInsets.only(
-                                top: MediaQuery.of(context).size.height * 0.04,
+                                top: MediaQuery.of(context).size.height * 0.02,
                                 left: MediaQuery.of(context).size.width * 0.05,
-                                right: MediaQuery.of(context).size.width * 0.05),
+                                right:
+                                    MediaQuery.of(context).size.width * 0.05),
                             child: TextFormField(
-                              enabled: true,
                               autocorrect: true,
-                              controller: passController,
-                              keyboardType: TextInputType.visiblePassword,
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
                               validator: (value) {
-                                
-                                if ( value.length >= 6 && value.isNotEmpty)
+                                Pattern pattern =
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                                RegExp regex = new RegExp(pattern);
+                                if (!(regex.hasMatch(value) &&
+                                    value.isNotEmpty)) {
+                                  setState(() {
+                                    x = true;
+                                  });
                                   return null;
-                                else
-                                  return "Password must be greater than 6 characters";
+                                } else {
+                                  setState(() {
+                                    x = false;
+                                  });
+                                  return null;
+                                }
                               },
-                              onSaved: (value) => pass = value.trim(),
-                              obscureText: true,
+                              onSaved: (value) => email = value.trim(),
+                              obscureText: false,
                               onChanged: (val) {
-                                setState(() => pass = val);
+                                setState(() => email = val);
                               },
                               autofocus: false,
                               style: TextStyle(color: Colors.white),
                               decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  // errorText: "password must be more than 6 characters",
                                   errorStyle: TextStyle(color: Colors.red),
                                   enabledBorder: const OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(150)),
-                                    borderSide:
-                                    const BorderSide(color: Colors.black, width: 0.0),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(150)),
+                                    borderSide: const BorderSide(
+                                        color: Colors.black, width: 0.0),
                                   ),
                                   focusedBorder: const OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(150)),
-                                    borderSide:
-                                    const BorderSide(color: Colors.black, width: 0.0),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(150)),
+                                    borderSide: const BorderSide(
+                                        color: Colors.black, width: 0.0),
                                   ),
-                                 
                                   prefixIcon: Icon(
-                                    Icons.security,
+                                    Icons.email,
                                     color: Colors.white,
                                     size: 25,
                                   ),
-                                  hintText: "Enter your password",
-                                  hintStyle: TextStyle(color: Colors.white, fontSize: 15),
-                                  labelText: "Password",
-                                  labelStyle: TextStyle(color: Colors.white, fontSize: 18)),
+                                  hintText: "Enter your Email ID",
+                                  hintStyle: TextStyle(
+                                      color: Colors.white, fontSize: 15),
+                                  labelText: "Email",
+                                  labelStyle: TextStyle(
+                                      color: Colors.white, fontSize: 18)),
                             ),
                           ),
                         ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.05,
+                          top: 3,
+                        ),
+                        child: Visibility(
+                          child: Text(
+                            "Email cannot be emty",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          visible: x,
+                        ),
+                      ),
+                        Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade900,
+                            borderRadius: BorderRadius.circular(150),
+                          ),
+                          margin: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.02,
+                              left: MediaQuery.of(context).size.width * 0.05,
+                              right: MediaQuery.of(context).size.width * 0.05),
+                          child: TextFormField(
+                            enabled: true,
+                            autocorrect: true,
+                            controller: passController,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) {
+                              if (value.length >= 6 && value.isNotEmpty) {
+                                setState(() {
+                                  y = false;
+                                });
+                                return null;
+                              } else {
+                                setState(() {
+                                  y = true;
+                                });
+                                return null;
+                              }
+                            },
+                            onSaved: (value) => pass = value.trim(),
+                            obscureText: true,
+                            onChanged: (val) {
+                              setState(() => pass = val);
+                            },
+                            autofocus: false,
+                            style: TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                                // errorText: "Wrong Pass Cyuka Blyat",
+
+                                border: InputBorder.none,
+                                errorStyle: TextStyle(color: Colors.red),
+                                enabledBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(150)),
+                                  borderSide: const BorderSide(
+                                      color: Colors.black, width: 0.0),
+                                ),
+                                focusedBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(150)),
+                                  borderSide: const BorderSide(
+                                      color: Colors.black, width: 0.0),
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.security,
+                                  color: Colors.white,
+                                  size: 25,
+                                ),
+                                hintText: "Enter your password",
+                                hintStyle: TextStyle(
+                                    color: Colors.white, fontSize: 15),
+                                labelText: "Password",
+                                labelStyle: TextStyle(
+                                    color: Colors.white, fontSize: 18)),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.05,
+                          top: 3,
+                        ),
+                        child: Visibility(
+                          child: Text(
+                            "Password cannot be empty must be more than 6 characters",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          visible: y,
+                        ),
+                      ),
                         Container(
                           width: MediaQuery.of(context).size.width,
                           child: Container(
@@ -520,7 +756,7 @@ Future<void> _weakPassword() async {
                               borderRadius: BorderRadius.circular(150),
                             ),
                             margin: EdgeInsets.only(
-                                top: MediaQuery.of(context).size.height * 0.04,
+                                top: MediaQuery.of(context).size.height * 0.02,
                                 left: MediaQuery.of(context).size.width * 0.05,
                                 right: MediaQuery.of(context).size.width * 0.05),
                             child: TextFormField(
@@ -530,9 +766,19 @@ Future<void> _weakPassword() async {
                               keyboardType: TextInputType.visiblePassword,
                               validator: (value) {
                                 if (value.length >= 6 && cnfPassController.text == passController.text && value.isNotEmpty)
+                                {
+                                  setState(() {
+                                  y = false; 
                                   return null ;
+                                });
+                                }                       
                                 else
-                                  return "Fuck you Cyuka blyat";
+                                  {
+                                    setState(() {
+                                  y = true;
+                                });
+                                return null;
+                                }
                               },
                               onSaved: (value) => cnfPass = value.trim(),
                               obscureText: true,
@@ -567,6 +813,19 @@ Future<void> _weakPassword() async {
                             ),
                           ),
                         ),
+                        Container(
+                        margin: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.05,
+                          top: 3,
+                        ),
+                        child: Visibility(
+                          child: Text(
+                            "Passwords do not match",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          visible: y,
+                        ),
+                      ),
                         Container(
                           height: 90,
                           width:  250,
@@ -740,6 +999,7 @@ Future<void> _weakPassword() async {
                                 {
                                   // showAlertDialog(context);
                                   try{
+                                    
                                    UserCredential userCredential= await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailController.text, password: passController.text);
                                     FirebaseFirestore.instance
                                     .collection('users')
@@ -750,8 +1010,11 @@ Future<void> _weakPassword() async {
                                       'email': emailController.text,
                                       'intrest': text,
                                       'uid': userCredential.user.uid,
+                                      
                                     });
-                                  Navigator.pushAndRemoveUntil(context, _homeRoute(), (route) => false);
+                                  // Navigator.pushAndRemoveUntil(context, _homeRoute(), (route) => false);
+                                  updateProfilePicture();
+                                  _accountCreated();
 
                                   } on FirebaseAuthException catch(err){
                                     if(err.code == "email-already-in-use"){

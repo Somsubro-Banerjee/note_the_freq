@@ -1,194 +1,198 @@
 import 'dart:io';
 import 'dart:ui';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flushbar/flushbar.dart';
-import"package:flutter/cupertino.dart";
+import "package:flutter/cupertino.dart";
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:not_the_freq/auth/SignupPage.dart';
 import 'package:not_the_freq/ui/HomeScreen.dart';
+import 'package:not_the_freq/ui/animatedLoader.dart';
 import 'package:video_player/video_player.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-Future<void> _userNotFound() async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: Colors.grey.shade900,
-        title: Text('No user was found with that email id !! ',
-        style: TextStyle(color: Colors.white)),
-        content: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
+  Future<void> _userNotFound() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
+          backgroundColor: Colors.grey.shade900,
+          title: Text('No user was found with that email id !! ',
+              style: TextStyle(color: Colors.white)),
+          content: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
             child: ListBody(
               children: <Widget>[
                 Text('please check your email and try again',
-                style: TextStyle(color: Colors.white)),
+                    style: TextStyle(color: Colors.white)),
                 SizedBox(height: 50),
                 Text('click OK to continue',
-                style: TextStyle(color: Colors.white)),
+                    style: TextStyle(color: Colors.white)),
               ],
             ),
           ),
-       
-        actions: <Widget>[
-          FlatButton(
-            child: Text('OK',
-            style: TextStyle(color: shade1)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+          actions: <Widget>[
+            FlatButton(
+              child: Text('OK', style: TextStyle(color: shade1)),
+              onPressed: () {
+                // passwordController.clear();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-Future<void> _invalidEmail() async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: Colors.grey.shade900,
-        title: Text('Invalid Email Id!!',
-        style: TextStyle(color: Colors.white)),
-        content: SingleChildScrollView(
+  Future<void> _invalidEmail() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey.shade900,
+          title:
+              Text('Invalid Email Id!!', style: TextStyle(color: Colors.white)),
+          content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('The email address you entered is invalid',
-                style: TextStyle(color: Colors.white)
-                ,),
+                Text(
+                  'The email address you entered is invalid',
+                  style: TextStyle(color: Colors.white),
+                ),
                 SizedBox(height: 50),
-                Text('Please try again',
-                style: TextStyle(color: Colors.white),),
+                Text(
+                  'Please try again',
+                  style: TextStyle(color: Colors.white),
+                ),
               ],
             ),
           ),
-        
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Try Again', style: TextStyle(color: shade1),),
-            onPressed: () {
-              Navigator.of(context).pop();
-              passwordController.clear();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-Future<void> _wrongPassword() async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: Colors.grey.shade900,
-        title: Text('Email and password does not match!!',
-        style: TextStyle(color: Colors.white)),
-        content:
-           SingleChildScrollView(
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'Try Again',
+                style: TextStyle(color: shade1),
+              ),
+              onPressed: () {
+                passwordController.clear();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _wrongPassword() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey.shade900,
+          title: Text('Email and password does not match!!',
+              style: TextStyle(color: Colors.white)),
+          content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Please try again',
-                style: TextStyle(color: Colors.white)),
+                Text('Please try again', style: TextStyle(color: Colors.white)),
                 SizedBox(height: 50),
                 Text('press continue to retry...',
-                style: TextStyle(color: Colors.white)),
+                    style: TextStyle(color: Colors.white)),
               ],
             ),
           ),
-        
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Continue',
-            style: TextStyle(color: shade1)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Continue', style: TextStyle(color: shade1)),
+              onPressed: () {
+                passwordController.clear();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   showAlertDialog(BuildContext context) {
-  AlertDialog alert = AlertDialog(
-    backgroundColor: Colors.black,
-    content: new Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircularProgressIndicator(),
-        ),
-        SizedBox(width: 20),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-              margin: EdgeInsets.only(left: 5),
-              child: Text(
-                "Loading",
-                style: TextStyle(color: Colors.white),
-              )),
-        ),
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.black,
+      content: new Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircularProgressIndicator(),
+          ),
+          SizedBox(width: 20),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                margin: EdgeInsets.only(left: 5),
+                child: Text(
+                  "Loading",
+                  style: TextStyle(color: Colors.white),
+                )),
+          ),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  showAlertDialogs(BuildContext context) {
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {},
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Invalid Credentials"),
+      content: Text("Email Id and Password doesnot match"),
+      actions: [
+        okButton,
       ],
-    ),
-  );
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
-showAlertDialogs(BuildContext context) {
+    );
 
-  // set up the button
-  Widget okButton = FlatButton(
-    child: Text("OK"),
-    onPressed: () { },
-  );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text("Invalid Credentials"),
-    content: Text("Email Id and Password doesnot match"),
-    actions: [
-      okButton,
-    ],
-  );
-
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
   FirebaseAuth _auth;
- 
 
   TextEditingController emailController;
   TextEditingController passwordController;
   String email;
   String pass;
-   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
   VideoPlayerController _controller;
   void initState() {
     super.initState();
@@ -202,26 +206,30 @@ showAlertDialogs(BuildContext context) {
         setState(() {});
       });
   }
-  Route _homeRoute()
-  {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child){
-        var begin = Offset(0.0, 1.0);
-        var end = Offset.zero;
-        var curve = Curves.easeIn;
 
-        var tween = Tween (begin: begin , end :end).chain(CurveTween(curve: curve));
-        return SlideTransition(position: animation.drive(tween),
-        child : child);
-      }
-      );
+  Route _homeRoute() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => AnimatedLoader(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = Offset(0.0, 1.0);
+          var end = Offset.zero;
+          var curve = Curves.easeIn;
+
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          return SlideTransition(
+              position: animation.drive(tween), child: child);
+        });
   }
+
   @override
   void dispose() {
     super.dispose();
     _controller.dispose();
   }
+
+  bool x = false;
+  bool y = false;
   Color shade1 = Color(0xFF7447d8);
   @override
   Widget build(BuildContext context) {
@@ -235,7 +243,7 @@ showAlertDialogs(BuildContext context) {
                 fit: BoxFit.cover,
                 child: SizedBox(
                   width: _controller.value.size?.width ?? 0,
-                    height: _controller.value.size?.height ?? 0,
+                  height: _controller.value.size?.height ?? 0,
                   child: VideoPlayer(_controller),
                 ),
               ),
@@ -244,60 +252,59 @@ showAlertDialogs(BuildContext context) {
               key: _loginFormKey,
               child: SingleChildScrollView(
                 child: Container(
-                  decoration: BoxDecoration(
-                  ),
+                  decoration: BoxDecoration(),
                   child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         height: 100,
-                        width:  200,
+                        width: 200,
                         padding: EdgeInsets.all(20),
                         margin: EdgeInsets.only(top: 100),
                         child: Stack(
                           alignment: Alignment.topLeft,
                           children: [
                             Container(
-                              height: 100,
+                                height: 100,
                                 width: 300,
-                              margin: EdgeInsets.only(top:30),
-                              decoration: BoxDecoration(
-                                color: shade1,
-                                borderRadius: BorderRadius.circular(40),
-                                border: Border.all(
-                                  color: shade1,
-                                  width: 2
-                                )
-                              )
-                            ),
+                                margin: EdgeInsets.only(top: 30),
+                                decoration: BoxDecoration(
+                                    color: shade1,
+                                    borderRadius: BorderRadius.circular(40),
+                                    border:
+                                        Border.all(color: shade1, width: 2))),
                             Container(
                               height: 400,
                               width: 400,
                               margin: EdgeInsets.only(left: 10),
-                              child: Text("Login",
+                              child: Text(
+                                "Login",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 50,
                                   fontWeight: FontWeight.bold,
-                                ),),
+                                ),
+                              ),
                             )
                           ],
                         ),
                       ),
-                      SizedBox(height: MediaQuery.of(context).size.height*0.10,),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.10,
+                      ),
                       Container(
                         width: MediaQuery.of(context).size.width,
                         child: SingleChildScrollView(
                           child: Container(
-                        decoration: BoxDecoration(
-                      color: Colors.grey.shade900,
-                          borderRadius: BorderRadius.circular(150)
-                        ),
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade900,
+                                borderRadius: BorderRadius.circular(150)),
                             margin: EdgeInsets.only(
                                 top: MediaQuery.of(context).size.height * 0.03,
                                 left: MediaQuery.of(context).size.width * 0.05,
-                                right: MediaQuery.of(context).size.width * 0.05),
+                                right:
+                                    MediaQuery.of(context).size.width * 0.05),
                             child: TextFormField(
                               autocorrect: true,
                               controller: emailController,
@@ -306,10 +313,18 @@ showAlertDialogs(BuildContext context) {
                                 Pattern pattern =
                                     r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
                                 RegExp regex = new RegExp(pattern);
-                                if (!(regex.hasMatch(value) && value.isNotEmpty))
+                                if (!(regex.hasMatch(value) &&
+                                    value.isNotEmpty)) {
+                                  setState(() {
+                                    x = true;
+                                  });
                                   return null;
-                                else
+                                } else {
+                                  setState(() {
+                                    x = false;
+                                  });
                                   return null;
+                                }
                               },
                               onSaved: (value) => email = value.trim(),
                               obscureText: false,
@@ -319,17 +334,18 @@ showAlertDialogs(BuildContext context) {
                               autofocus: false,
                               style: TextStyle(color: Colors.white),
                               decoration: InputDecoration(
-
                                   errorStyle: TextStyle(color: Colors.red),
                                   enabledBorder: const OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(150)),
-                                    borderSide:
-                                    const BorderSide(color: Colors.black, width: 0.0),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(150)),
+                                    borderSide: const BorderSide(
+                                        color: Colors.black, width: 0.0),
                                   ),
                                   focusedBorder: const OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(150)),
-                                    borderSide:
-                                    const BorderSide(color: Colors.black, width: 0.0),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(150)),
+                                    borderSide: const BorderSide(
+                                        color: Colors.black, width: 0.0),
                                   ),
                                   prefixIcon: Icon(
                                     Icons.email,
@@ -337,12 +353,26 @@ showAlertDialogs(BuildContext context) {
                                     size: 25,
                                   ),
                                   hintText: "Enter your Email ID",
-                                  hintStyle: TextStyle(color: Colors.white, fontSize: 15),
+                                  hintStyle: TextStyle(
+                                      color: Colors.white, fontSize: 15),
                                   labelText: "Email",
-                                  labelStyle: TextStyle(color: Colors.white, fontSize: 18)
-                              ),
+                                  labelStyle: TextStyle(
+                                      color: Colors.white, fontSize: 18)),
                             ),
                           ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.05,
+                          top: 3,
+                        ),
+                        child: Visibility(
+                          child: Text(
+                            "Email cannot be emty",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          visible: x,
                         ),
                       ),
                       Container(
@@ -352,7 +382,7 @@ showAlertDialogs(BuildContext context) {
                             color: Colors.grey.shade900,
                             borderRadius: BorderRadius.circular(150),
                           ),
-                           margin: EdgeInsets.only(
+                          margin: EdgeInsets.only(
                               top: MediaQuery.of(context).size.height * 0.04,
                               left: MediaQuery.of(context).size.width * 0.05,
                               right: MediaQuery.of(context).size.width * 0.05),
@@ -362,10 +392,17 @@ showAlertDialogs(BuildContext context) {
                             controller: passwordController,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
-                              if (value.length >= 6 && value.isNotEmpty)
+                              if (value.length >= 6 && value.isNotEmpty) {
+                                setState(() {
+                                  y = false;
+                                });
                                 return null;
-                              else
+                              } else {
+                                setState(() {
+                                  y = true;
+                                });
                                 return null;
+                              }
                             },
                             onSaved: (value) => pass = value.trim(),
                             obscureText: true,
@@ -375,30 +412,47 @@ showAlertDialogs(BuildContext context) {
                             autofocus: false,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
-                              // errorText: "Wrong Pass Cyuka Blyat",
+                                // errorText: "Wrong Pass Cyuka Blyat",
+
                                 border: InputBorder.none,
                                 errorStyle: TextStyle(color: Colors.red),
                                 enabledBorder: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(150)),
-                                  borderSide:
-                                  const BorderSide(color: Colors.black, width: 0.0),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(150)),
+                                  borderSide: const BorderSide(
+                                      color: Colors.black, width: 0.0),
                                 ),
                                 focusedBorder: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(150)),
-                                  borderSide:
-                                  const BorderSide(color: Colors.black, width: 0.0),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(150)),
+                                  borderSide: const BorderSide(
+                                      color: Colors.black, width: 0.0),
                                 ),
-                              
                                 prefixIcon: Icon(
                                   Icons.security,
                                   color: Colors.white,
                                   size: 25,
                                 ),
                                 hintText: "Enter your password",
-                                hintStyle: TextStyle(color: Colors.white, fontSize: 15),
+                                hintStyle: TextStyle(
+                                    color: Colors.white, fontSize: 15),
                                 labelText: "Password",
-                                labelStyle: TextStyle(color: Colors.white, fontSize: 18)),
+                                labelStyle: TextStyle(
+                                    color: Colors.white, fontSize: 18)),
                           ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.05,
+                          top: 3,
+                        ),
+                        child: Visibility(
+                          child: Text(
+                            "Password cannot be empty",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          visible: y,
                         ),
                       ),
                       Container(
@@ -407,16 +461,16 @@ showAlertDialogs(BuildContext context) {
                             left: MediaQuery.of(context).size.width * 0.65),
                         child: RichText(
                             text: TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  print("hheheeheee");
-                                },
-                              text: "Forgot Password ?",
-                              style: TextStyle(
-                                  color: shade1,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w900),
-                            )),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              print("hheheeheee");
+                            },
+                          text: "Forgot Password ?",
+                          style: TextStyle(
+                              color: shade1,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900),
+                        )),
                       ),
                       Container(
                         height: MediaQuery.of(context).size.height * 0.07,
@@ -428,39 +482,47 @@ showAlertDialogs(BuildContext context) {
                         child: RaisedButton(
                           color: shade1,
                           onPressed: () async {
-                            if (_loginFormKey.currentState.validate()){
-                              try{
-                                  UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                                       email: email,
-                                       password: pass,
-                                     ).then((value) {
-                                       showAlertDialog(context);
-                                       Navigator.pushAndRemoveUntil(context, _homeRoute(), (_) => false);
-                                       print('user found with email: '+value.user.email);
-                                       return value;
-                                     });
-                              } on FirebaseAuthException catch (e){
-                                if (e.code == "user-not-found"){
+                            if (_loginFormKey.currentState.validate()) {
+                              try {
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                showAlertDialog(context);
+                                Navigator.of(context).pop();
+                                UserCredential userCredential =
+                                    await FirebaseAuth.instance
+                                        .signInWithEmailAndPassword(
+                                  email: email,
+                                  password: pass,
+                                )
+                                  .then((value) { 
+                                  prefs.setString('email', FirebaseAuth.instance.currentUser.email);
+                                  Navigator.pushAndRemoveUntil(
+                                      context, _homeRoute(), (_) => false);
+                                  print('user found with email: ' +
+                                      value.user.email);
+                                      passwordController.clear();
+                                  return value;
+                                });
+                              } on FirebaseAuthException catch (e) {
+                                if (e.code == "user-not-found") {
                                   _userNotFound();
                                   print("user not found ");
-                                } else if(e.code == 'invalid-email'){
+                                } else if (e.code == 'invalid-email') {
                                   _invalidEmail();
                                   print('invalid email address');
-                                } else if (e.code == 'wrong-password'){
+                                } else if (e.code == 'wrong-password') {
                                   _wrongPassword();
                                   print('invalid password try again');
                                 }
                               }
-                            }
-                            else{
+                            } else {
                               showDialog(
-                              context: context,
-                              builder: (_) => FunkyOverlay(),
+                                context: context,
+                                builder: (_) => FunkyOverlay(),
                               );
                             }
                           },
                           child: Text(
-                            "LOGIN", 
+                            "LOGIN",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -475,19 +537,20 @@ showAlertDialogs(BuildContext context) {
                             left: MediaQuery.of(context).size.width * 0.05),
                         child: RichText(
                             text: TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  // showAlertDialog(context);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => SignupPage()));
-                                },
-                              text: "Don't have an account?? Sign up",
-                              style: TextStyle(
-                                  color: shade1,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w900),
-                            )),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // showAlertDialog(context);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SignupPage()));
+                            },
+                          text: "Don't have an account?? Sign up",
+                          style: TextStyle(
+                              color: shade1,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900),
+                        )),
                       ),
                     ],
                   ),
@@ -500,7 +563,6 @@ showAlertDialogs(BuildContext context) {
     );
   }
 }
-
 
 class FunkyOverlay extends StatefulWidget {
   @override
@@ -542,8 +604,10 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     borderRadius: BorderRadius.circular(15.0))),
             child: Padding(
               padding: const EdgeInsets.all(50.0),
-              child: Text("Email and password cannot be empty!",
-              style: TextStyle(color: Colors.white, fontSize: 20),),
+              child: Text(
+                "Email and password cannot be empty!",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
             ),
           ),
         ),
