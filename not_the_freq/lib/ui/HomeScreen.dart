@@ -32,34 +32,24 @@ final tabs = [
     Center(child: Container(child: Text("How ", style: TextStyle(color: Colors.white),))),
     Center(child: Container(child: Text("are", style: TextStyle(color: Colors.white),))),
     Center(child: Container(child: Text("you", style: TextStyle(color: Colors.white),))),
-    Center(child: Container(child: Text("nigga", style: TextStyle(color: Colors.white),))),
+    AccountsPage()
   ];
-  List<DrawerItem> _drawerItems = <DrawerItem>[
-    DrawerItem(icon: Icon(Icons.people), label: "People"),
-    DrawerItem(icon: Icon(Icons.trending_up), label: "Trending"),
-    DrawerItem(icon: Icon(Icons.tv)),
-    DrawerItem(icon: Icon(Icons.work), label: "Work"),
-    DrawerItem(icon: Icon(Icons.web)),
-    DrawerItem(icon: Icon(Icons.videogame_asset)),
-    DrawerItem(icon: Icon(Icons.book), label: "Book"),
-    DrawerItem(icon: Icon(Icons.call), label: "Telephone")
-  ];
+
   @override
   Widget build(BuildContext context) {
-  
     return Scaffold(
-      drawer: CurvedDrawer(
-        items:<DrawerItem> [
-          // DrawerItem(icon: Icon(Icons.people), label: "people")
-          _drawerItems[_dPage],
-        ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(50.0),
+              child: AppBar(
+                elevation: 8.0,
+          // centerTitle: true,
+          // toolbarHeight: 50,
+          title: _page == 0 ? Text("FEED",style: TextStyle(color: Colors.red),) : _page == 1 ? Text("ME",style: TextStyle(color: Colors.blue),) : _page == 2 ? Text("MY",style: TextStyle(color: Colors.cyan),) : _page == 3 ? Text("PRECIOUS",style: TextStyle(color: Colors.green),) : _page == 4 ? Text("DATA",style: TextStyle(color: Colors.purple),) : Text("LOL"),
+          backgroundColor: _page == 0 ? Colors.grey.shade900 : _page == 1 ? Colors.grey.shade900 : _page == 2 ? Colors.grey.shade900 : _page == 3 ? Colors.grey.shade900 :Colors.grey.shade900,
         ),
-
-      appBar: AppBar(
-        backgroundColor: _page == 0 ? Colors.grey.shade900 : _page == 1 ? Colors.grey.shade900 : _page == 2 ? Colors.grey.shade900 : _page == 3 ? Colors.grey.shade900 :Colors.grey.shade900,
       ),
       bottomNavigationBar: CurvedNavigationBar(
-        color: Colors.white,
+        color: Colors.black,
         backgroundColor: _page == 0 ? Colors.grey.shade900 : _page == 1 ? Colors.grey.shade900 : _page == 2 ? Colors.grey.shade900 : _page == 3 ? Colors.grey.shade900 :Colors.grey.shade900,
         buttonBackgroundColor: Colors.white,
         items: [
@@ -68,7 +58,6 @@ final tabs = [
           Icon(Icons.add, size: 20,color: Colors.cyan,),
           Icon(Icons.share, size: 20,color: Colors.green,),
           Icon(Icons.close, size: 20,color: Colors.purple,),
-          
         ],
         animationDuration: Duration(milliseconds: 300),
         // animationCurve: Curves.bounceInOut,
@@ -127,6 +116,26 @@ class _PostScreenState extends State<PostScreen> {
             })
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+class AccountsPage extends StatefulWidget {
+  @override
+  _AccountsPageState createState() => _AccountsPageState();
+}
+
+class _AccountsPageState extends State<AccountsPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+
+      child: Column(
+       children: [
+          Text("nigga", style: TextStyle(color: Colors.white),),
+       ],
       ),
     );
   }
