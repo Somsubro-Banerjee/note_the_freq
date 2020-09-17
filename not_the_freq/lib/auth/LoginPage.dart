@@ -62,6 +62,9 @@ class _LoginPageState extends State<LoginPage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
           backgroundColor: Colors.grey.shade900,
           title:
               Text('Invalid Email Id!!', style: TextStyle(color: Colors.white)),
@@ -87,7 +90,6 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(color: shade1),
               ),
               onPressed: () {
-                passwordController.clear();
                 Navigator.of(context).pop();
               },
             ),
@@ -103,6 +105,9 @@ class _LoginPageState extends State<LoginPage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
           backgroundColor: Colors.grey.shade900,
           title: Text('Email and password does not match!!',
               style: TextStyle(color: Colors.white)),
@@ -120,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
             FlatButton(
               child: Text('Continue', style: TextStyle(color: shade1)),
               onPressed: () {
-                passwordController.clear();
+              
                 Navigator.of(context).pop();
               },
             ),
@@ -132,6 +137,9 @@ class _LoginPageState extends State<LoginPage> {
 
   showAlertDialog(BuildContext context) {
     AlertDialog alert = AlertDialog(
+      shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
       backgroundColor: Colors.black,
       content: new Row(
         children: [
@@ -484,8 +492,8 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () async {
                             if (_loginFormKey.currentState.validate()) {
                               try {
-                                SharedPreferences prefs = await SharedPreferences.getInstance();
                                 showAlertDialog(context);
+                                SharedPreferences prefs = await SharedPreferences.getInstance();                             
                                 Navigator.of(context).pop();
                                 UserCredential userCredential =
                                     await FirebaseAuth.instance
