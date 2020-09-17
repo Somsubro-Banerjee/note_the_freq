@@ -36,6 +36,7 @@ dependencies:
   animations: ^1.1.2
   flare_flutter: ^2.0.6
   curved_navigation_bar: ^0.3.4
+  curved_drawer: ^0.1.2
 
 
   # The following adds the Cupertino Icons font to your application.
