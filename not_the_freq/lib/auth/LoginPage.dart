@@ -1,14 +1,13 @@
-import 'dart:io';
+
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flushbar/flushbar.dart';
+
 import "package:flutter/cupertino.dart";
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:not_the_freq/auth/SignupPage.dart';
-import 'package:not_the_freq/ui/HomeScreen.dart';
+
 import 'package:not_the_freq/ui/animatedLoader.dart';
 import 'package:video_player/video_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -194,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  FirebaseAuth _auth;
+
 
   TextEditingController emailController;
   TextEditingController passwordController;
@@ -495,8 +494,7 @@ class _LoginPageState extends State<LoginPage> {
                                 showAlertDialog(context);
                                 SharedPreferences prefs = await SharedPreferences.getInstance();                             
                                 Navigator.of(context).pop();
-                                UserCredential userCredential =
-                                    await FirebaseAuth.instance
+                                 await FirebaseAuth.instance
                                         .signInWithEmailAndPassword(
                                   email: email,
                                   password: pass,

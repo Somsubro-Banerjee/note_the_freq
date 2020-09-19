@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:curved_drawer/curved_drawer.dart';
+
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:not_the_freq/auth/LoginPage.dart';
@@ -12,20 +13,18 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+
+
 class _HomePageState extends State<HomePage> {
 int _page = 0;
-int _dPage = 0;
+
   @override
 void initState() { 
   FirebaseAuth.instance.currentUser;
   super.initState();
 }
-final FirebaseFirestore _database =  FirebaseFirestore.instance;
-Future<DocumentSnapshot> name = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.uid).get().then((documentSnapshot) {
-  String naeme = documentSnapshot.data()["bio"];
-  print(naeme);
-  return documentSnapshot;
-});
+
+
  
 final tabs = [
     PostScreen(),
@@ -110,7 +109,7 @@ class _PostScreenState extends State<PostScreen> {
               ) ,
             ),
             IconButton(icon: Icon(Icons.clear, color: Colors.white,), onPressed: () async{
-               SharedPreferences prefs = await SharedPreferences.getInstance();  
+              SharedPreferences prefs = await SharedPreferences.getInstance();  
               FirebaseAuth.instance.signOut().whenComplete(() => Navigator.pushReplacement(context, loginRoute()));
               prefs.remove('email');
             })
@@ -122,21 +121,77 @@ class _PostScreenState extends State<PostScreen> {
 }
 
 
+
 class AccountsPage extends StatefulWidget {
   @override
   _AccountsPageState createState() => _AccountsPageState();
 }
 
 class _AccountsPageState extends State<AccountsPage> {
+
+readFirestoreData() async{
+  DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.uid).get();
+  String name;
+
+  setState(() {
+    name = snapshot.data()['name'];
+  });
+  // print(abc);
+  return name;
+}
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    
+     return FutureBuilder<dynamic>
+     (
+       future: readFirestoreData(),
+       builder: (context, snapshot) {
+         if(snapshot.hasData){
+           return Column(
+            //  mainAxisAlignment: MainAxisAlignment.start,
+            //  crossAxisAlignment: CrossAxisAlignment.center,
+             children: [
+               SizedBox(height: 20),
+               Center(
+                 child: CircleAvatar(
+                   backgroundColor: Colors.purple,
+                   maxRadius: 105,
+                     child: CircleAvatar(
+                     radius: 100,
+                     backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser.photoURL),
+                   ),
+                 ),
+               ),
+               SizedBox(height: 30),
+               Center(
+                 child: Text(
+                   snapshot.data, 
+                   style: TextStyle(color: Colors.white, fontSize: 20),
+                   )
+                ),
+                SizedBox(height: 50),
+               Row(
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: [
+                   Center(
+                     child: Container(
+                       child: Text("BIO", style: TextStyle(color:Colors.white)),
+                     ),
+                   ),
+                   Container(
+                    //  child: ,
+                   ),
+                 ],
+               ) ,
 
-      child: Column(
-       children: [
-          Text("nigga", style: TextStyle(color: Colors.white),),
-       ],
-      ),
-    );
+             ],
+           );
+         }
+         return Center(child:  CircularProgressIndicator(),);
+       },
+     );
+   
   }
 }

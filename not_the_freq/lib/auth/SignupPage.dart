@@ -2,18 +2,17 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flushbar/flushbar.dart';
+
 import"package:flutter/cupertino.dart";
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:not_the_freq/auth/LoginPage.dart';
-import 'package:not_the_freq/ui/HomeScreen.dart';
+
 import 'package:video_player/video_player.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_tagging/flutter_tagging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 class SignupPage extends StatefulWidget {
   @override
   _SignupPageState createState() => _SignupPageState();
@@ -24,6 +23,9 @@ class _SignupPageState extends State<SignupPage> {
 
 showAlertDialog(BuildContext context) {
   AlertDialog alert = AlertDialog(
+    shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
     backgroundColor: Colors.black,
     content: new Row(
       children: [
@@ -59,6 +61,9 @@ Future<void> _emailAlredyExists() async {
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
         backgroundColor: Colors.grey.shade900,
         title: Text('Invalid Email Id!!',
         style: TextStyle(color: Colors.white)),
@@ -94,6 +99,9 @@ Future<void> _accountCreated() async {
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
         backgroundColor: Colors.grey.shade900,
         title: Text('Account created succesfully',
         style: TextStyle(color: Colors.white)),
@@ -129,6 +137,9 @@ Future<void> _invalidEmail() async {
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
         backgroundColor: Colors.grey.shade900,
         title: Text(
           'Invalid Email Id!!',
@@ -165,6 +176,9 @@ Future<void> _weakPassword() async {
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
         backgroundColor: Colors.grey.shade900,
         title: Text('Weal Password',
         style: TextStyle(color: Colors.white)),
@@ -201,6 +215,9 @@ Future<void> _imagePicker() async {
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40)),
+            ),
         backgroundColor: Colors.grey.shade900,
         title: Text('Pick your Image!!!',
         style: TextStyle(color: Colors.white)),
@@ -310,7 +327,7 @@ Future getImageFromGallery() async {
   String interest;
   String profilePic;
 
-  FirebaseAuth _auth = FirebaseAuth.instance;
+ 
 
   String text = "Nothing to show";
   VideoPlayerController _controller;
@@ -338,21 +355,7 @@ Future getImageFromGallery() async {
       }
       );
   }
-  Route _homeRoute()
-  {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child){
-        var begin = Offset(0.0, 1.0);
-        var end = Offset.zero;
-        var curve = Curves.easeIn;
-
-        var tween = Tween (begin: begin , end :end).chain(CurveTween(curve: curve));
-        return SlideTransition(position: animation.drive(tween),
-        child : child);
-      }
-      );
-  }
+ 
 
   @override
   void initState() {
@@ -779,6 +782,7 @@ Future getImageFromGallery() async {
                                 });
                                 return null;
                                 }
+                                return null;
                               },
                               onSaved: (value) => cnfPass = value.trim(),
                               obscureText: true,

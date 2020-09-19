@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:not_the_freq/auth/LoginPage.dart';
+
 import 'package:not_the_freq/ui/HomeScreen.dart';
 class SplashtoHome extends StatefulWidget {
   @override
