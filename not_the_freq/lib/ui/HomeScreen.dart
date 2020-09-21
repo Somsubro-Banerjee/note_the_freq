@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:not_the_freq/auth/LoginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -28,8 +28,6 @@ void initState() {
  
 final tabs = [
     PostScreen(),
-    Center(child: Container(child: Text("How ", style: TextStyle(color: Colors.white),))),
-    Center(child: Container(child: Text("are", style: TextStyle(color: Colors.white),))),
     Center(child: Container(child: Text("you", style: TextStyle(color: Colors.white),))),
     AccountsPage()
   ];
@@ -39,24 +37,24 @@ final tabs = [
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),
-              child: AppBar(
+              child: _page == 0 ? AppBar(
+                actions: [IconButton(icon: Icon(Icons.chat_bubble_outline_rounded), onPressed: () {})],
+                centerTitle: true,
                 elevation: 8.0,
           // centerTitle: true,
           // toolbarHeight: 50,
-          title: _page == 0 ? Text("FEED",style: TextStyle(color: Colors.red),) : _page == 1 ? Text("ME",style: TextStyle(color: Colors.blue),) : _page == 2 ? Text("MY",style: TextStyle(color: Colors.cyan),) : _page == 3 ? Text("PRECIOUS",style: TextStyle(color: Colors.green),) : _page == 4 ? Text("DATA",style: TextStyle(color: Colors.purple),) : Text("LOL"),
+          title: _page == 0 ? Text("Note_the_freQ",style: TextStyle(color: Colors.red),) : _page == 1 ? Text("ME",style: TextStyle(color: Colors.blue),) : _page == 2 ? Text("MY",style: TextStyle(color: Colors.cyan),) : _page == 3 ? Text("PRECIOUS",style: TextStyle(color: Colors.green),) : _page == 4 ? Text("DATA",style: TextStyle(color: Colors.purple),) : Text("LOL"),
           backgroundColor: _page == 0 ? Colors.grey.shade900 : _page == 1 ? Colors.grey.shade900 : _page == 2 ? Colors.grey.shade900 : _page == 3 ? Colors.grey.shade900 :Colors.grey.shade900,
-        ),
+        ) : AppBar(elevation: 0, backgroundColor: Colors.grey.shade900,),
       ),
       bottomNavigationBar: CurvedNavigationBar(
         color: Colors.black,
         backgroundColor: _page == 0 ? Colors.grey.shade900 : _page == 1 ? Colors.grey.shade900 : _page == 2 ? Colors.grey.shade900 : _page == 3 ? Colors.grey.shade900 :Colors.grey.shade900,
         buttonBackgroundColor: Colors.white,
         items: [
-          Icon(Icons.done_all, size: 20,color: Colors.red,),
-          Icon(Icons.verified, size: 20,color: Colors.blue,),
-          Icon(Icons.add, size: 20,color: Colors.cyan,),
-          Icon(Icons.share, size: 20,color: Colors.green,),
-          Icon(Icons.close, size: 20,color: Colors.purple,),
+          Icon(Icons.home, size: 20,color: Colors.red,),
+          Icon(Icons.add, size: 20,color: Colors.green,),
+          Icon(Icons.account_circle_outlined, size: 20,color: Colors.purple,),
         ],
         animationDuration: Duration(milliseconds: 300),
         // animationCurve: Curves.bounceInOut,
@@ -110,9 +108,14 @@ class _PostScreenState extends State<PostScreen> {
             ),
             IconButton(icon: Icon(Icons.clear, color: Colors.white,), onPressed: () async{
               SharedPreferences prefs = await SharedPreferences.getInstance();  
-              FirebaseAuth.instance.signOut().whenComplete(() => Navigator.pushReplacement(context, loginRoute()));
+              FirebaseAuth.instance.signOut().whenComplete(() {
+                // _getAccountToken();
+                 Navigator.pushReplacement(context, loginRoute());
+                 }
+              );
               prefs.remove('email');
-            })
+            }),
+
           ],
         ),
       ),
@@ -139,6 +142,7 @@ readFirestoreData() async{
   // print(abc);
   return name;
 }
+String pPic = "";
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +163,7 @@ readFirestoreData() async{
                    maxRadius: 105,
                      child: CircleAvatar(
                      radius: 100,
-                     backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser.photoURL),
+                     backgroundImage: pPic == null ? NetworkImage(FirebaseAuth.instance.currentUser.photoURL) : AssetImage("assets/images/1.jpg"),
                    ),
                  ),
                ),

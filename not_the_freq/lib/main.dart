@@ -29,7 +29,6 @@ class NoteTheFreq extends StatefulWidget {
   @override
   _NoteTheFreqState createState() => _NoteTheFreqState();
 }
-
 class _NoteTheFreqState extends State<NoteTheFreq> {
   @override
   Widget build(BuildContext context) {

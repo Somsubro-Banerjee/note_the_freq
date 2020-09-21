@@ -1,13 +1,11 @@
 
 import 'dart:ui';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import "package:flutter/cupertino.dart";
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import "package:flutter/cupertino.dart";
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:not_the_freq/auth/SignupPage.dart';
-
 import 'package:not_the_freq/ui/animatedLoader.dart';
 import 'package:video_player/video_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +13,6 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
-
 class _LoginPageState extends State<LoginPage> {
   Future<void> _userNotFound() async {
     return showDialog<void>(
@@ -54,6 +51,15 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
+  // FirebaseMessaging _fcm = FirebaseMessaging();
+  //  _getAccountToken() async{
+  //   String token;
+  //   User user = await FirebaseAuth.instance.currentUser;
+  //   String tokken = await _fcm.getToken();
+  //   if(token == null){
+  //     print(token);
+  //   }
+  // }
 
   Future<void> _invalidEmail() async {
     return showDialog<void>(
@@ -492,6 +498,7 @@ class _LoginPageState extends State<LoginPage> {
                             if (_loginFormKey.currentState.validate()) {
                               try {
                                 showAlertDialog(context);
+                                
                                 SharedPreferences prefs = await SharedPreferences.getInstance();                             
                                 Navigator.of(context).pop();
                                  await FirebaseAuth.instance
@@ -503,9 +510,10 @@ class _LoginPageState extends State<LoginPage> {
                                   prefs.setString('email', FirebaseAuth.instance.currentUser.email);
                                   Navigator.pushAndRemoveUntil(
                                       context, _homeRoute(), (_) => false);
+                                    // _getAccountToken();
                                   print('user found with email: ' +
                                       value.user.email);
-                                      passwordController.clear();
+                                     
                                   return value;
                                 });
                               } on FirebaseAuthException catch (e) {
