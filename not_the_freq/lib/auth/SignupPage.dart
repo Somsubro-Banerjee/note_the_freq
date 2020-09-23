@@ -974,9 +974,8 @@ class _SignupPageState extends State<SignupPage> {
                               right: MediaQuery.of(context).size.width * 0.05),
                           child: FlutterTagging(
                             textFieldDecoration: InputDecoration(
-                                fillColor: Colors.white,
-                                prefixIcon:
-                                    Icon(Icons.tag, color: Colors.white),
+                              fillColor: Colors.white,
+                              prefixIcon: Icon(Icons.person, color: Colors.white),
                                 border: InputBorder.none,
                                 enabledBorder: const OutlineInputBorder(
                                   borderRadius:
