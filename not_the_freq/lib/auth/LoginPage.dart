@@ -1,6 +1,4 @@
-
 import 'dart:ui';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import "package:flutter/cupertino.dart";
@@ -9,10 +7,12 @@ import 'package:not_the_freq/auth/SignupPage.dart';
 import 'package:not_the_freq/ui/animatedLoader.dart';
 import 'package:video_player/video_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
+
 class _LoginPageState extends State<LoginPage> {
   Future<void> _userNotFound() async {
     return showDialog<void>(
@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(40)),
-            ),
+          ),
           backgroundColor: Colors.grey.shade900,
           title: Text('No user was found with that email id !! ',
               style: TextStyle(color: Colors.white)),
@@ -51,15 +51,6 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-  // FirebaseMessaging _fcm = FirebaseMessaging();
-  //  _getAccountToken() async{
-  //   String token;
-  //   User user = await FirebaseAuth.instance.currentUser;
-  //   String tokken = await _fcm.getToken();
-  //   if(token == null){
-  //     print(token);
-  //   }
-  // }
 
   Future<void> _invalidEmail() async {
     return showDialog<void>(
@@ -69,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(40)),
-            ),
+          ),
           backgroundColor: Colors.grey.shade900,
           title:
               Text('Invalid Email Id!!', style: TextStyle(color: Colors.white)),
@@ -112,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(40)),
-            ),
+          ),
           backgroundColor: Colors.grey.shade900,
           title: Text('Email and password does not match!!',
               style: TextStyle(color: Colors.white)),
@@ -130,7 +121,6 @@ class _LoginPageState extends State<LoginPage> {
             FlatButton(
               child: Text('Continue', style: TextStyle(color: shade1)),
               onPressed: () {
-              
                 Navigator.of(context).pop();
               },
             ),
@@ -143,8 +133,8 @@ class _LoginPageState extends State<LoginPage> {
   showAlertDialog(BuildContext context) {
     AlertDialog alert = AlertDialog(
       shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(40)),
-            ),
+        borderRadius: BorderRadius.all(Radius.circular(40)),
+      ),
       backgroundColor: Colors.black,
       content: new Row(
         children: [
@@ -199,8 +189,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
-
   TextEditingController emailController;
   TextEditingController passwordController;
   String email;
@@ -222,7 +210,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Route _homeRoute() {
     return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => AnimatedLoader(),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            AnimatedLoader(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           var begin = Offset(0.0, 1.0);
           var end = Offset.zero;
@@ -498,22 +487,24 @@ class _LoginPageState extends State<LoginPage> {
                             if (_loginFormKey.currentState.validate()) {
                               try {
                                 showAlertDialog(context);
-                                
-                                SharedPreferences prefs = await SharedPreferences.getInstance();                             
+
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
                                 Navigator.of(context).pop();
-                                 await FirebaseAuth.instance
-                                        .signInWithEmailAndPassword(
+                                await FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
                                   email: email,
                                   password: pass,
                                 )
-                                  .then((value) { 
-                                  prefs.setString('email', FirebaseAuth.instance.currentUser.email);
+                                    .then((value) {
+                                  prefs.setString('email',
+                                      FirebaseAuth.instance.currentUser.email);
                                   Navigator.pushAndRemoveUntil(
                                       context, _homeRoute(), (_) => false);
-                                    // _getAccountToken();
+                                  // _getAccountToken();
                                   print('user found with email: ' +
                                       value.user.email);
-                                     
+
                                   return value;
                                 });
                               } on FirebaseAuthException catch (e) {

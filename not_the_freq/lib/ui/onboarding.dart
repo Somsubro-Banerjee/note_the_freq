@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:not_the_freq/auth/LoginPage.dart';
 
 int initScreen;
+
 class OnboardingScreen extends StatefulWidget {
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
@@ -43,7 +44,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           decoration: BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: AssetImage('assets/images/4.jpg',
+              image: AssetImage(
+                'assets/images/4.jpg',
               ),
             ),
           ),
@@ -83,27 +85,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Center(
-                              ),
+                              Center(),
                               SizedBox(height: 200.0),
                               Text(
                                 'LEARN',
                                 style: TextStyle(
-                                  letterSpacing: 5,
-                                  color: Colors.white,
-                                  fontSize: 60,
-                                  fontWeight: FontWeight.bold
-                                ),
-                                
+                                    letterSpacing: 5,
+                                    color: Colors.white,
+                                    fontSize: 60,
+                                    fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 60.0),
                               Text(
                                 'Learn from unlimited sources enhance your capabilities and knowledge...',
                                 style: TextStyle(
-                                  letterSpacing: 5,
-                                  color: Colors.white,
-                                  fontSize: 20
-                                ),
+                                    letterSpacing: 5,
+                                    color: Colors.white,
+                                    fontSize: 20),
                               ),
                             ],
                           ),
@@ -116,27 +114,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Center(
-                              ),
+                              Center(),
                               SizedBox(height: 200.0),
                               Text(
                                 'TEACH',
                                 style: TextStyle(
-                                  letterSpacing: 5,
-                                  color: Colors.white,
-                                  fontSize: 60,
-                                  fontWeight: FontWeight.bold
-                                ),
-                                
+                                    letterSpacing: 5,
+                                    color: Colors.white,
+                                    fontSize: 60,
+                                    fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 60.0),
                               Text(
                                 'Pass on your knowledge and capabilities to others, pave a path to their future...',
                                 style: TextStyle(
-                                  letterSpacing: 5,
-                                  color: Colors.white,
-                                  fontSize: 20
-                                ),
+                                    letterSpacing: 5,
+                                    color: Colors.white,
+                                    fontSize: 20),
                               ),
                             ],
                           ),
@@ -149,28 +143,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Center(
-                              ),
+                              Center(),
                               SizedBox(height: 200.0),
                               Text(
                                 'SHARE',
                                 style: TextStyle(
-                                  letterSpacing: 5,
-                                  color: Colors.white,
-                                  fontSize: 60,
-                                  fontWeight: FontWeight.bold
-                                ),
-                                
+                                    letterSpacing: 5,
+                                    color: Colors.white,
+                                    fontSize: 60,
+                                    fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 60.0),
                               Text(
-                              
                                 'Share your work with thousands of other emerging artists make yourself famous...',
                                 style: TextStyle(
-                                  letterSpacing: 5,
-                                  color: Colors.white,
-                                  fontSize: 20
-                                ),
+                                    letterSpacing: 5,
+                                    color: Colors.white,
+                                    fontSize: 20),
                               ),
                             ],
                           ),
@@ -180,8 +169,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 40,),
-                     child: Row(
+                  padding: EdgeInsets.only(
+                    left: 40,
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: _buildPageIndicator(),
                   ),
@@ -233,7 +224,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: Colors.black,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
                 },
                 child: Center(
                   child: Padding(
