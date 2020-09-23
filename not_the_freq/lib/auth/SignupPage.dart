@@ -957,7 +957,7 @@ Future getImageFromGallery() async {
                           child: FlutterTagging(
                             textFieldDecoration: InputDecoration(
                               fillColor: Colors.white,
-                              prefixIcon: Icon(Icons.tag, color: Colors.white),
+                              prefixIcon: Icon(Icons.person, color: Colors.white),
                                 border: InputBorder.none,
                                 enabledBorder: const OutlineInputBorder(
                                   borderRadius: BorderRadius.all(Radius.circular(20)),

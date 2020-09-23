@@ -35,7 +35,7 @@ final tabs = [
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),
               child: _page == 0 ? AppBar(
-                actions: [IconButton(icon: Icon(Icons.chat_bubble_outline_rounded), onPressed: () {})],
+                actions: [IconButton(icon: Icon(Icons.chat), onPressed: () {})],
                 centerTitle: true,
                 elevation: 8.0,
           // centerTitle: true,
@@ -51,7 +51,7 @@ final tabs = [
         items: [
           Icon(Icons.home, size: 20,color: Colors.red,),
           Icon(Icons.add, size: 20,color: Colors.green,),
-          Icon(Icons.account_circle_outlined, size: 20,color: Colors.purple,),
+          Icon(Icons.account_circle, size: 20,color: Colors.purple,),
         ],
         animationDuration: Duration(milliseconds: 300),
         // animationCurve: Curves.bounceInOut,
